@@ -5,13 +5,15 @@ module.exports = (grunt) ->
         coffee: 'src/coffee/**/*.coffee'
         styles: 'src/styles'
         specs: 'specs/*.coffee'
+        libs: 'src/js/libs'
       server:
         js: 'public/js'
         styles: 'public/styles'
+
     watch:
       coffee:
         files: ['<%= paths.client.coffee %>']
-        tasks: ['cs']
+        tasks: ['cs', 'less:prod']
       less:
         files: ['<%= paths.client.styles %>/**/*.less']
         tasks: ['less:prod']
@@ -23,21 +25,12 @@ module.exports = (grunt) ->
       dev:
         script: 'server.coffee'
 
-    copy:
-      coffee:
-        files: [
-          expand: true
-          cwd: 'src/client'
-          src: ['coffee/*.*']
-          dest: 'public'
-        ]
-
     coffee:
       options:
         sourceMap: false
       compile:
         files:
-          'public/js/app.js': ['<%= paths.client.coffee %>']
+          'public/js/app.js': ['build/build.coffee']
       clientSpecs:
         files: (grunt.file.expandMapping ['specs/*.coffee'],
           'specs/js/',
@@ -53,6 +46,11 @@ module.exports = (grunt) ->
           yuicompress: true
         files:
           'public/styles/app.css': ['<%= paths.client.styles %>/app.less']
+
+    clean:
+      public: 'public'
+      coffee: 'build'
+
     karma:
       options:
         configFile: './config/karma.conf.js'
@@ -66,9 +64,29 @@ module.exports = (grunt) ->
         browsers: ['Chrome']
 
     concat:
-      js:
-        src: ['src/js/libs/*.js']
-        dest: 'public/js/libs.js'
+      preJs:
+        src: [
+          '<%= paths.client.libs %>/TweenMax.min.js'
+        ]
+        dest: 'public/js/pre-libs.js'
+      postJs:
+        src: [
+          '<%= paths.client.libs %>/angular-animate.min.js'
+          '<%= paths.client.libs %>/ng-Fx.min.js'
+        ]
+        dest: 'public/js/post-libs.js'
+      coffee:
+        src: ['<%= paths.client.coffee %>']
+        dest: 'build/build.coffee'
+
+    copy:
+      maps:
+        files: [
+          expand: true
+          cwd: 'src/js/libs'
+          src: ['*.map']
+          dest: 'public/js'
+        ]
 
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-nodemon'
@@ -80,8 +98,16 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-less'
 
-  grunt.registerTask 'cs', ['copy:coffee', 'coffee', 'concat:js']
-  grunt.registerTask 'test', ['default', 'clean:sourceMaps', 'coffee:clientSpecs']
+  grunt.registerTask 'cs', [
+    'clean:public'
+    'concat:coffee'
+    'coffee'
+    'concat:preJs'
+    'concat:postJs'
+    'clean:coffee'
+    'copy:maps'
+  ]
+  grunt.registerTask 'test', ['default', 'coffee:clientSpecs']
   grunt.registerTask 'default', ['cs', 'less:prod']
-  grunt.registerTask 'production', ['default', 'clean:sourceMaps']
+  grunt.registerTask 'production', ['default']
   grunt.registerTask 'heroku', ['default']

@@ -1,15 +1,17 @@
 app = angular.module 'conc', []
 
-app.factory 'LoginService', ->
-  user = null
-  login: (userData) ->
-    user = userData
+app.factory 'LoginService', (LinkedInModels) ->
+  { LinkedInProfile } = LinkedInModels
+  profile = null
 
-  isLoggedIn: -> user?
+  login: (profileData) ->
+    profile ?= new LinkedInProfile data: profileData
 
-app.value 'user', null
+  getUserProfile: -> profile
+
+  isLoggedIn: -> !!profile
 
 app.controller 'AppCtrl', ($scope, LoginService) ->
-  @isLoggedIn = LoginService.isLoggedIn
+  _.extend @, LoginService
 
-  return @
+app.factory 'IN', -> IN

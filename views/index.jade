@@ -1,32 +1,44 @@
 extends layout
 
 block content
-  #conc-app(data-ng-app='conc', data-ng-controller='AppCtrl as app', data-ng-cloak)
+  include client-templates/card
+
+  #conc-app(data-ng-app='concentration', data-ng-controller='AppCtrl as appCtrl', data-ng-cloak)
     include navbar
-    .container-fluid(ng-if='app.isLoggedIn()')
+    .container-fluid(ng-if='appCtrl.isLoggedIn()')
       .row
         include sidebar
         include main
 
-    .login.text-center(ng-if='!app.isLoggedIn()')
-      h2 Please Signin with Linkedin
-      script(type='IN/Login', data-onAuth='onLinkedInAuth')
-
+  #login.text-center
+    h2 Have you signed in?
+    script(type='IN/Login')
 
 block scripts
+  script(src='js/pre-libs.js')
   script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
-  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js')
   script(src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js')
-  script(src='js/app.js')
-  script(src='http://platform.linkedin.com/in.js')
+  script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js')
+  script(src='js/post-libs.js')
+  script(src='https://platform.linkedin.com/in.js')
     | api_key: 75495h1njyfd9v
+    | onLoad: onLinkedInLoad
+    | authorize: true
+  script(src='js/app.js')
   script
+    | // we have to block so that we give angular a chance to capture `IN`
+    | window.name = 'NG_DEFER_BOOTSTRAP!';
+    | function onLinkedInLoad() {
+    |   IN.Event.on(IN, 'auth', onLinkedInAuth);
+    | }
     | function onLinkedInAuth() {
-    |   IN.API.Profile('me').result(function(me) {
-    |     var me = me.values[0];
+    |   angular.element('#login').remove();
+    |   angular.resumeBootstrap();
+    |   IN.API.Profile('me').result(function(profiles) {
+    |     var profile = profiles.values[0];
     |     angular.element('#conc-app').injector()
     |       .invoke(['LoginService', '$rootScope', function(LoginService, $rootScope) {
-    |         $rootScope.$apply(function() { LoginService.login(me); });
+    |         $rootScope.$apply(function() { LoginService.login(profile); });
     |       }]);
     |   });
     | }
