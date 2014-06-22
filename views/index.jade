@@ -1,0 +1,32 @@
+extends layout
+
+block content
+  #conc-app(data-ng-app='conc', data-ng-controller='AppCtrl as app', data-ng-cloak)
+    include navbar
+    .container-fluid(ng-if='app.isLoggedIn()')
+      .row
+        include sidebar
+        include main
+
+    .login.text-center(ng-if='!app.isLoggedIn()')
+      h2 Please Signin with Linkedin
+      script(type='IN/Login', data-onAuth='onLinkedInAuth')
+
+
+block scripts
+  script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js')
+  script(src='js/app.js')
+  script(src='http://platform.linkedin.com/in.js')
+    | api_key: 75495h1njyfd9v
+  script
+    | function onLinkedInAuth() {
+    |   IN.API.Profile('me').result(function(me) {
+    |     var me = me.values[0];
+    |     angular.element('#conc-app').injector()
+    |       .invoke(['LoginService', '$rootScope', function(LoginService, $rootScope) {
+    |         $rootScope.$apply(function() { LoginService.login(me); });
+    |       }]);
+    |   });
+    | }
