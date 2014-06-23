@@ -5,10 +5,13 @@ app.directive 'emCountdown', ($interval, $parse) ->
   link: ($scope, $elem, $attrs) ->
     clock = null
 
+    # jQuery a -> Int -> ()
     appendSeconds = (($elem, left) ->
       $elem.text "#{left}s"
+      return
     ).bind null, $elem
 
+    # Int -> Promise
     runClock = (duration = 60000) ->
       start = _.now()
       duration = duration / 1000

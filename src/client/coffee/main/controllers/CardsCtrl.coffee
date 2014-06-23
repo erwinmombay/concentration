@@ -1,24 +1,34 @@
 app.controller 'CardsCtrl', ($scope, LoginService) ->
 
   pair = []
+  matches = []
 
-  isMatch = (a, b) ->
-    a.id is b.id
+  # CardViewModel -> CardViewModel -> Boolean
+  isMatch = (a, b) -> a.id is b.id
 
-  resetPair = (a, b) ->
+  # Maybe CardViewModel -> Maybe CardViewModel -> ()
+  resetPair = (a = {}, b = {}) ->
     a.flipped = b.flipped = false
     pair.length = 0
+    return
 
+  # CardViewModel -> ()
   @onCardClick = (card) ->
+    unless $scope.gameCtrl.timer
+      resetPair card
+      return
+    return if card in matches
     if pair.length is 2
-      unless isMatch pair...
-        resetPair pair...
-      else pair.length = 0
-
+      if isMatch pair...
+        matches.push pair...
+        pair.length = 0
+        return
+      resetPair pair...
     card.flipped = true
     pair.push card
+    return
 
-  @img =
-    'background-img': 'img/1.jpg'
+  $scope.$watch 'gameCtrl.timer', (timer) ->
+    pair.length = matches.length = 0
 
   return this

@@ -26,7 +26,7 @@
             data-ng-click='cardsCtrl.onCardClick(card)',
             data-ng-repeat='card in gameCtrl.cards track by card.cid')
             .card-data-container(data-ng-switch='card.type'
-              data-ng-class='{flipped: card.flipped, "fx-fade-normal": card.flipped}')
+              data-ng-class='{flipped: card.flipped, "fx-flipY": card.flipped, "fx-speed-500": card.flipped}')
               .card-img(data-ng-switch-when='img')
                 img(data-ng-src='{{card.imgSrc}}')
               .card-info(data-ng-switch-default)

@@ -9,7 +9,13 @@ app.factory 'CardService', ->
       @flipped = false
     ) ->
       @cid = "#{@type}#{@id}"
+      @matched = false
 
+    reset: ->
+      @matched = @flipped = false
+      return
+
+  # [x] -> [x]
   fisherYates = (a) ->
     i = a.length
     while --i > 0
@@ -19,6 +25,7 @@ app.factory 'CardService', ->
       a[i] = t
     a
 
+  # LinkedInProfile -> Maybe String -> CardViewModel
   buildCardViewModel = (profile, type = 'info') ->
     new CardViewModel(
         profile.id
@@ -28,8 +35,10 @@ app.factory 'CardService', ->
         profile.pictureUrl
     )
 
+  # [CardViewModel] -> [CardViewModel]
   shuffle: (cards) -> fisherYates cards[..]
 
+  # [LinkedInProfile] -> (CardViewModel, CardViewModel)
   buildCardViewModels: (linkedInProfiles) ->
     viewModels = for profile in linkedInProfiles
       info = buildCardViewModel profile, 'info'

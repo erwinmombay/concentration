@@ -1,5 +1,6 @@
 (function() {
   var app,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -42,7 +43,7 @@
           __loaded: true
         });
         loggedIn = true;
-        return defer.resolve(profile);
+        defer.resolve(profile);
       },
       getUserAsync: function() {
         return defer.promise;
@@ -58,29 +59,44 @@
   });
 
   app.controller('CardsCtrl', function($scope, LoginService) {
-    var isMatch, pair, resetPair;
+    var isMatch, matches, pair, resetPair;
     pair = [];
+    matches = [];
     isMatch = function(a, b) {
       return a.id === b.id;
     };
     resetPair = function(a, b) {
+      if (a == null) {
+        a = {};
+      }
+      if (b == null) {
+        b = {};
+      }
       a.flipped = b.flipped = false;
-      return pair.length = 0;
+      pair.length = 0;
     };
     this.onCardClick = function(card) {
+      if (!$scope.gameCtrl.timer) {
+        resetPair(card);
+        return;
+      }
+      if (__indexOf.call(matches, card) >= 0) {
+        return;
+      }
       if (pair.length === 2) {
-        if (!isMatch.apply(null, pair)) {
-          resetPair.apply(null, pair);
-        } else {
+        if (isMatch.apply(null, pair)) {
+          matches.push.apply(matches, pair);
           pair.length = 0;
+          return;
         }
+        resetPair.apply(null, pair);
       }
       card.flipped = true;
-      return pair.push(card);
+      pair.push(card);
     };
-    this.img = {
-      'background-img': 'img/1.jpg'
-    };
+    $scope.$watch('gameCtrl.timer', function(timer) {
+      return pair.length = matches.length = 0;
+    });
     return this;
   });
 
@@ -89,30 +105,49 @@
     this.cards = [];
     this.timer = false;
     this.numOfCards = 20;
+    this.difficulty = {
+      easy: 60,
+      medium: 30,
+      hard: 15
+    };
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
-          return _this.cardViewModels = CardService.buildCardViewModels(connections);
+          var _ref;
+          return ([].splice.apply(_this.cardViewModels, [0, 9e9].concat(_ref = CardService.buildCardViewModels(connections))), _ref);
         });
       };
     })(this));
-    this.duration = function(numOfCards) {
+    this.duration = function(numOfCards, difficulty) {
       if (numOfCards == null) {
         numOfCards = 0;
       }
-      return (Math.ceil((numOfCards / 10) * 15)) * 1000;
+      if (difficulty == null) {
+        difficulty = this.difficulty.easy;
+      }
+      return (Math.ceil((numOfCards / 10) * difficulty)) * 1000;
     };
     this.increaseCards = function() {};
     this.decreaseCards = function() {};
-    this.start = function(viewModels, numOfCards) {
-      var shuffledPairs;
+    this.start = function(pairedViewModels, numOfCards) {
+      var item, pair, shuffledPairs, _i, _j, _len, _len1, _ref;
+      if (numOfCards == null) {
+        numOfCards = 20;
+      }
+      for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
+        pair = pairedViewModels[_i];
+        for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
+          item = pair[_j];
+          item.reset();
+        }
+      }
       this.timer = true;
-      shuffledPairs = CardService.shuffle(viewModels);
-      return this.cards = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2)));
+      shuffledPairs = CardService.shuffle(pairedViewModels);
+      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2))))), _ref);
     };
     this.stop = function() {
       this.timer = false;
-      return this.cards = [];
+      return this.cards.lenth = 0;
     };
     return this;
   });
@@ -134,7 +169,7 @@
         var appendSeconds, clock, runClock, stopClock;
         clock = null;
         appendSeconds = (function($elem, left) {
-          return $elem.text("" + left + "s");
+          $elem.text("" + left + "s");
         }).bind(null, $elem);
         runClock = function(duration) {
           var left, start;
@@ -185,7 +220,12 @@
         this.imgSrc = imgSrc != null ? imgSrc : '';
         this.flipped = flipped != null ? flipped : false;
         this.cid = "" + this.type + this.id;
+        this.matched = false;
       }
+
+      CardViewModel.prototype.reset = function() {
+        this.matched = this.flipped = false;
+      };
 
       return CardViewModel;
 
@@ -228,13 +268,6 @@
     };
   });
 
-  app.factory('TimerService', function($rootScope) {
-    return {
-      start: function() {},
-      stop: function() {}
-    };
-  });
-
   app.factory('Models', function(IN, $q) {
     var ApiModel, LinkedInProfile, LinkedInProfiles, cache, store;
     store = {};
@@ -272,7 +305,7 @@
         if (this.__loaded == null) {
           this.__loaded = false;
         }
-        return this.__pending = false;
+        this.__pending = false;
       };
 
       ApiModel.prototype.__success = function(defer, data) {
@@ -282,12 +315,12 @@
         }
         this.__loaded = true;
         this.__pending = false;
-        return defer.resolve(data);
+        defer.resolve(data);
       };
 
       ApiModel.prototype.__failure = function(defer, err) {
         this.__loaded = this.__pending = false;
-        return defer.reject(err);
+        defer.reject(err);
       };
 
       ApiModel.prototype.find = function(options) {
@@ -327,7 +360,10 @@
 
       LinkedInProfiles.collection = true;
 
-      LinkedInProfiles.prototype.find = function() {
+      LinkedInProfiles.prototype.find = function(options) {
+        if (options == null) {
+          options = {};
+        }
         return LinkedInProfiles.__super__.find.apply(this, arguments).then(function(profiles) {
           profiles = _.filter(profiles, validProfilePredicate);
           return this.__cache = _.map(profiles, function(profile) {
