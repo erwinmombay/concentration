@@ -21,7 +21,7 @@ app.directive 'emCountdown', ($interval, $parse) ->
       , 1000, 0, false
 
     stopClock = ->
-      $interval.cancel clock
+      $interval.cancel clock if clock?
       clock = null
 
     $scope.$watch 'emCountdown', (newVal, oldVal, scope) ->

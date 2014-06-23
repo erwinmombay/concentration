@@ -1,29 +1,28 @@
 app.controller 'GameCtrl', ($scope, LoginService, CardService) ->
+  @cardViewModels = []
   @cards = []
   @timer = false
-  @numberOfConnections = 20
+  @numOfCards = 20
 
-  #createCards = ((profile) ->
-    #cards = []
-    #for profile in profiles
-      #cards.push.call @cards, profile, profile
-    #@cards = CardService.shuffle cards
-  #).bind @
-
-  @numberOfCards = (connections) ->
-    connections * 2
+  # NOTE: i would prefer to use `bind` than fat arrow (as to not create closures)
+  # but this is just a quicker solution for now.
+  LoginService.getUserAsync().then (user) =>
+    user.connections.find().then (connections) =>
+      @cardViewModels = CardService.buildCardViewModels connections
 
   @duration = (numOfCards = 0) ->
     (Math.ceil (numOfCards / 10) * 15) * 1000
 
   @increaseCards = ->
 
+  @decreaseCards = ->
+
   @start = ->
     @timer = true
+    @cards = CardService.shuffle @cardViewModels
 
   @stop = ->
     @timer = false
-
-  #LoginService.getUserProfileAsync().then createCards
+    @cards = []
 
   return this

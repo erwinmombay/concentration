@@ -6,6 +6,12 @@ _.mixin
   dot: (x) -> (y) -> y[x]
   not: (x) -> not x
 
+app.controller 'AppCtrl', ($scope, LoginService) ->
+  _.extend @, LoginService
+  LoginService.getUserAsync().then (user) ->
+    user.connections.find()
+  return this
+
 app.factory 'LoginService', (Models, $q) ->
   { LinkedInProfile } = Models
   defer = $q.defer()
@@ -16,14 +22,8 @@ app.factory 'LoginService', (Models, $q) ->
     loggedIn = true
     defer.resolve profile
 
-  getUserProfileAsync: -> defer.promise
+  getUserAsync: -> defer.promise
 
   isLoggedIn: -> loggedIn
-
-app.controller 'AppCtrl', ($scope, LoginService) ->
-  _.extend @, LoginService
-  LoginService.getUserProfileAsync().then (profile) ->
-    profile.connections.find()
-  return this
 
 app.factory 'IN', -> window.IN

@@ -7,4 +7,7 @@
   .cards.row(data-ng-controller='CardsCtrl as cardsCtrl')
 
     .card.col-xs-6.col-md-2.fx-fade-down.fx-speed-500(data-ng-repeat='card in gameCtrl.cards')
-      .card-info {{card.firstName + ' ' + card.lastName}}
+      .card-data-container(data-ng-switch='card.type')
+        .card-img(data-ng-when='img')
+          img(data-ng-src='card.imgSrc')
+        .card-info(data-ng-otherwise data-ng-bind='{{card.fullName}}')
