@@ -1,6 +1,7 @@
 app.factory 'CardService', ->
   class CardViewModel
-    @constructor: (@type = 'info', @fullName = '', @title = '', @imgSrc = '') ->
+    constructor: (@id, @type = 'info', @fullName = '', @title = '', @imgSrc = '', @flipped = false) ->
+      @cid = "#{@type}#{@id}"
 
   fisherYates = (a) ->
     i = a.length
@@ -11,17 +12,22 @@ app.factory 'CardService', ->
       a[i] = t
     a
 
+  buildCardViewModel = (profile, type = 'info') ->
+    new CardViewModel(
+        profile.id
+        type
+        "#{profile.firstName} #{profile.lastName}"
+        profile.headline
+        profile.pictureUrl
+    )
+
   shuffle: (cards) -> fisherYates cards[..]
 
   buildCardViewModels: (linkedInProfiles) ->
     viewModels = []
     for profile in linkedInProfiles
-      info = new CardViewModel(
-        'info'
-        "#{profile.firstName} #{profile.lastName}"
-      )
-      img = _.clone info
-      img.type = 'img'
+      info = buildCardViewModel profile, 'info'
+      img = buildCardViewModel profile, 'img'
       viewModels.push.call viewModels, info, img
     viewModels
 

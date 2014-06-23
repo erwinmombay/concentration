@@ -4,8 +4,6 @@ app.controller 'CardsCtrl', ($scope, LoginService) ->
 
   @onCardClick = (card) ->
 
-  @cards = []
-
   #$scope.gameCtrl.generate().then ((profiles) ->
     #@cards[0..] = profiles
   #).bind @

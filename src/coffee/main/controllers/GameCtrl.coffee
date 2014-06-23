@@ -20,6 +20,9 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService) ->
   @start = ->
     @timer = true
     @cards = CardService.shuffle @cardViewModels
+    window.cards = @cards
+    console.log @cards
+    @cards
 
   @stop = ->
     @timer = false
