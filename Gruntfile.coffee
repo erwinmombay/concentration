@@ -2,35 +2,38 @@ module.exports = (grunt) ->
   grunt.initConfig
     paths:
       client:
-        coffee: 'src/coffee/**/*.coffee'
-        styles: 'src/styles'
-        specs: 'specs/*.coffee'
-        libs: 'src/js/libs'
+        coffee: 'src/client/coffee'
+        styles: 'src/client/styles'
+        libs: 'src/client/js/libs'
+        build: 'src/client/build'
+        img: 'src/client/img'
+        fonts: 'src/client/fonts'
       server:
-        js: 'public/js'
-        styles: 'public/styles'
+        specs: 'specs/*.coffee'
+        js: 'src/server/public/js'
+        styles: 'src/server/public/styles'
 
     watch:
       coffee:
-        files: ['<%= paths.client.coffee %>']
+        files: ['<%= paths.client.coffee %>/**/*.coffee']
         tasks: ['cs', 'less:prod']
       less:
         files: ['<%= paths.client.styles %>/**/*.less']
         tasks: ['less:prod']
       test:
-        files: ['<%= paths.client.specs %>']
+        files: ['<%= paths.server.specs %>']
         tasks: ['test', 'karma:unit']
 
     nodemon:
       dev:
-        script: 'server.coffee'
+        script: 'app.coffee'
 
     coffee:
       options:
         sourceMap: false
       compile:
         files:
-          'public/js/app.js': ['build/build.coffee']
+          'src/server/public/js/app.js': ['<%= paths.client.build %>/build.coffee']
       clientSpecs:
         files: (grunt.file.expandMapping ['specs/*.coffee'],
           'specs/js/',
@@ -45,11 +48,11 @@ module.exports = (grunt) ->
         options:
           yuicompress: true
         files:
-          'public/styles/app.css': ['<%= paths.client.styles %>/app.less']
+          'src/server/public/styles/app.css': ['<%= paths.client.styles %>/app.less']
 
     clean:
-      public: 'public'
-      coffee: 'build'
+      public: 'src/server/public'
+      coffee: 'src/client/build'
 
     karma:
       options:
@@ -68,24 +71,24 @@ module.exports = (grunt) ->
         src: [
           '<%= paths.client.libs %>/TweenMax.min.js'
         ]
-        dest: 'public/js/pre-libs.js'
+        dest: '<%= paths.server.js %>/pre-libs.js'
       postJs:
         src: [
           '<%= paths.client.libs %>/angular-animate.min.js'
           '<%= paths.client.libs %>/ng-Fx.min.js'
         ]
-        dest: 'public/js/post-libs.js'
+        dest: '<%= paths.server.js %>/post-libs.js'
       coffee:
-        src: ['<%= paths.client.coffee %>']
-        dest: 'build/build.coffee'
+        src: ['<%= paths.client.coffee %>/**/*.coffee']
+        dest: '<%= paths.client.build %>/build.coffee'
 
     copy:
       img:
-        files: [expand: true, cwd: 'src/img', src: ['*.jpg'], dest: 'public/img']
+        files: [expand: true, cwd: 'src/client/img', src: ['*.jpg'], dest: 'src/server/public/img']
       maps:
-        files: [expand: true ,cwd: 'src/js/libs', src: ['*.map'], dest: 'public/js']
+        files: [expand: true ,cwd: 'src/client/js/libs', src: ['*.map'], dest: 'src/server/public/js']
       fonts:
-        files: [expand: true ,cwd: 'src/fonts', src: ['*.*'], dest: 'public/fonts']
+        files: [expand: true ,cwd: 'src/client/fonts', src: ['*.*'], dest: 'src/server/public/fonts']
 
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-nodemon'
