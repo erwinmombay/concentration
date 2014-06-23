@@ -1,1 +1,1 @@
-web: nodemon server.coffee
+web: nodemon app.coffee
