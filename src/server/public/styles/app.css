@@ -6177,6 +6177,9 @@ button.close {
   text-align: center;
   height: 140px;
 }
+.card.matched {
+  visibility: hidden;
+}
 .card-data-container,
 .card-img {
   height: 100%;
@@ -6185,21 +6188,48 @@ button.close {
 .card-img img {
   height: 100%;
 }
-.card-data-container {
-  visibility: hidden;
+/* entire container, keeps perspective */
+.flip-container {
+  -webkit-perspective: 1000;
+  -moz-perspective: 1000;
+  perspective: 1000;
 }
-.card-data-container.flipped {
-  visibility: visible;
+.flip-container.flip .flipper {
+  -webkit-transform: rotateY(180deg);
+  -ms-transform: rotateY(180deg);
+  -o-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+.flipper {
+  -webkit-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+/* hide back of pane during swap */
+.front,
+.back {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* front pane, placed above back */
+.front {
+  z-index: 2;
+}
+/* back, initially hidden pane */
+.back {
+  -webkit-transform: rotateY(180deg);
+  -ms-transform: rotateY(180deg);
+  -o-transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 body {
   padding-top: 50px;
-}
-/*
- * Global add-ons
- */
-.sub-header {
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
 }
 /*
  * Top navigation
@@ -6207,6 +6237,9 @@ body {
  */
 .navbar-fixed-top {
   border: 0;
+}
+.navbar-purple {
+  color: #6f5499;
 }
 /*
  * Sidebar

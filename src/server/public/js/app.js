@@ -25,7 +25,7 @@
   app.controller('AppCtrl', function($scope, LoginService) {
     _.extend(this, LoginService);
     LoginService.getUserAsync().then(function(user) {
-      return user.connections.find();
+      return user.connections.find().then(function(connections) {});
     });
     return this;
   });
@@ -76,6 +76,7 @@
       pair.length = 0;
     };
     this.onCardClick = function(card) {
+      var a, b;
       if (!$scope.gameCtrl.timer) {
         resetPair(card);
         return;
@@ -85,6 +86,8 @@
       }
       if (pair.length === 2) {
         if (isMatch.apply(null, pair)) {
+          a = pair[0], b = pair[1];
+          a.matched = b.matched = true;
           matches.push.apply(matches, pair);
           pair.length = 0;
           return;
@@ -101,6 +104,7 @@
   });
 
   app.controller('GameCtrl', function($scope, LoginService, CardService) {
+    this.gameReady = false;
     this.cardViewModels = [];
     this.cards = [];
     this.timer = false;
@@ -110,10 +114,12 @@
       medium: 30,
       hard: 15
     };
+    this.curDifficulty = this.difficulty.easy;
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
           var _ref;
+          _this.gameReady = true;
           return ([].splice.apply(_this.cardViewModels, [0, 9e9].concat(_ref = CardService.buildCardViewModels(connections))), _ref);
         });
       };
@@ -134,6 +140,7 @@
       if (numOfCards == null) {
         numOfCards = 20;
       }
+      this.timer = true;
       for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
         pair = pairedViewModels[_i];
         for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
@@ -141,13 +148,12 @@
           item.reset();
         }
       }
-      this.timer = true;
       shuffledPairs = CardService.shuffle(pairedViewModels);
       return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2))))), _ref);
     };
     this.stop = function() {
       this.timer = false;
-      return this.cards.lenth = 0;
+      return this.cards.length = 0;
     };
     return this;
   });

@@ -1,0 +1,15 @@
+script(type='text/ng-template', id='card.html')
+  .card.col-xs-3.col-md-2.fx-fade-down.fx-speed-600(
+    data-ng-click='cardsCtrl.onCardClick(card)',
+    data-ng-class='{"matched": card.matched}',
+    data-ng-repeat='card in gameCtrl.cards track by card.cid')
+    .card-data-container.flip-container(data-ng-class='{flip: card.flipped}')
+      .flipper
+        .back(data-ng-switch='card.type')
+          .card-img(data-ng-switch-when='img')
+            img(data-ng-src='{{card.imgSrc}}')
+          .card-info(data-ng-switch-default)
+            span(data-ng-bind='card.fullName')
+
+        .front
+          span click me

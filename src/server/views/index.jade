@@ -1,9 +1,8 @@
 extends layout
 
 block content
-  include client-templates/card
-
   #conc-app(data-ng-app='concentration', data-ng-controller='AppCtrl as appCtrl', data-ng-cloak)
+    include ngTemplates/card
     include navbar
     .container-fluid(ng-if='appCtrl.isLoggedIn()')
       .row

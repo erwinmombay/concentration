@@ -10,7 +10,7 @@ _.mixin
 app.controller 'AppCtrl', ($scope, LoginService) ->
   _.extend @, LoginService
   LoginService.getUserAsync().then (user) ->
-    user.connections.find()
+    user.connections.find().then (connections) ->
   return this
 
 

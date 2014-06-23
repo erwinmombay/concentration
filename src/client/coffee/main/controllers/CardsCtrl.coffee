@@ -20,6 +20,8 @@ app.controller 'CardsCtrl', ($scope, LoginService) ->
     return if card in matches
     if pair.length is 2
       if isMatch pair...
+        [a, b] = pair
+        a.matched = b.matched = true
         matches.push pair...
         pair.length = 0
         return

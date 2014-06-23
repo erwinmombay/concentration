@@ -23,6 +23,9 @@ module.exports = (grunt) ->
       test:
         files: ['<%= paths.server.specs %>']
         tasks: ['test', 'karma:unit']
+      js:
+        files: ['<%= paths.client.libs %>/*.*']
+        task: ['concat:preJs', 'concat:PostJs']
 
     nodemon:
       dev:
@@ -84,11 +87,26 @@ module.exports = (grunt) ->
 
     copy:
       img:
-        files: [expand: true, cwd: 'src/client/img', src: ['*.jpg'], dest: 'src/server/public/img']
+        files: [
+          expand: true
+          cwd: 'src/client/img'
+          src: ['*.jpg']
+          dest: 'src/server/public/img'
+        ]
       maps:
-        files: [expand: true ,cwd: 'src/client/js/libs', src: ['*.map'], dest: 'src/server/public/js']
+        files: [
+          expand: true
+          cwd: 'src/client/js/libs'
+          src: ['*.map']
+          dest: 'src/server/public/js'
+        ]
       fonts:
-        files: [expand: true ,cwd: 'src/client/fonts', src: ['*.*'], dest: 'src/server/public/fonts']
+        files: [
+          expand: true
+          cwd: 'src/client/fonts'
+          src: ['*.*']
+          dest: 'src/server/public/fonts'
+        ]
 
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-nodemon'
