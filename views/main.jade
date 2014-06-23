@@ -1,15 +1,33 @@
-.col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.main(data-ng-controller='GameCtrl as gameCtrl')
+.col-md-9.col-md-offset-3.main(data-ng-controller='GameCtrl as gameCtrl')
   .controls.row
-    button(data-ng-click='gameCtrl.start()') Start Game
-    span(em-countdown='gameCtrl.timer', em-countdown-duration='gameCtrl.duration(gameCtrl.cards.length)')
+    .col-md-12
+      .btn-group
+        button.btn-success(type='button',
+          data-ng-click='gameCtrl.start(gameCtrl.cardViewModels, gameCtrl.numOfCards)',
+          data-ng-hide='gameCtrl.timer') Start Game
+        button.btn-danger(type='button',
+          data-ng-click='gameCtrl.stop()',
+          data-ng-show='gameCtrl.timer') Stop Game
+        span(
+          data-ng-if='gameCtrl.timer',
+          em-countdown='gameCtrl.timer',
+          em-countdown-duration='gameCtrl.duration(gameCtrl.cards.length)')
+
+        span(data-ng-bind-template='number of cards {{gameCtrl.numOfCards}}')
+        span.glyphicon.gylphicon-arrow-up
+        span.glyphicon.gylphicon-arrow-down
 
   .cards.row(data-ng-controller='CardsCtrl as cardsCtrl')
-
-    .card.col-xs-6.col-md-2.fx-fade-down.fx-speed-500(
-      data-ng-repeat='card in gameCtrl.cards track by card.cid'
-    )
-      .card-data-container(data-ng-switch='card.type')
-        .card-img(data-ng-switch-when='img')
-          img(data-ng-src='{{card.imgSrc}}')
-        .card-info(data-ng-switch-default)
-          span(data-ng-bind='card.fullName')
+    .col-md-12
+      //-img.container-img(src='img/1.jpg')
+      .cards-container
+        .row
+          .card.col-xs-3.col-md-2.fx-fade-down.fx-speed-500(
+            data-ng-click='cardsCtrl.onCardClick(card)',
+            data-ng-repeat='card in gameCtrl.cards track by card.cid')
+            .card-data-container(data-ng-switch='card.type'
+              data-ng-class='{flipped: card.flipped, "fx-fade-normal": card.flipped}')
+              .card-img(data-ng-switch-when='img')
+                img(data-ng-src='{{card.imgSrc}}')
+              .card-info(data-ng-switch-default)
+                span(data-ng-bind='card.fullName')

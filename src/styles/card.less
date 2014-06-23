@@ -5,7 +5,20 @@
   border-radius: 3px;
   cursor: pointer;
   .box-sizing(border-box);
-  height: 100px;
-  width: 100px;
   .text-center();
+  height: 140px;
+}
+
+.card-data-container, .card-img {
+  height: 100%;
+  img {
+    height: 100%;
+  }
+}
+
+.card-data-container {
+  visibility: hidden;
+  &.flipped {
+    visibility: visible;
+  }
 }

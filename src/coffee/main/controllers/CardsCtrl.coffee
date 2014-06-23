@@ -2,10 +2,23 @@ app.controller 'CardsCtrl', ($scope, LoginService) ->
 
   pair = []
 
-  @onCardClick = (card) ->
+  isMatch = (a, b) ->
+    a.id is b.id
 
-  #$scope.gameCtrl.generate().then ((profiles) ->
-    #@cards[0..] = profiles
-  #).bind @
+  resetPair = (a, b) ->
+    a.flipped = b.flipped = false
+    pair.length = 0
+
+  @onCardClick = (card) ->
+    if pair.length is 2
+      unless isMatch pair...
+        resetPair pair...
+      else pair.length = 0
+
+    card.flipped = true
+    pair.push card
+
+  @img =
+    'background-img': 'img/1.jpg'
 
   return this

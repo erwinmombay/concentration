@@ -80,13 +80,12 @@ module.exports = (grunt) ->
         dest: 'build/build.coffee'
 
     copy:
+      img:
+        files: [expand: true, cwd: 'src/img', src: ['*.jpg'], dest: 'public/img']
       maps:
-        files: [
-          expand: true
-          cwd: 'src/js/libs'
-          src: ['*.map']
-          dest: 'public/js'
-        ]
+        files: [expand: true ,cwd: 'src/js/libs', src: ['*.map'], dest: 'public/js']
+      fonts:
+        files: [expand: true ,cwd: 'src/fonts', src: ['*.*'], dest: 'public/fonts']
 
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-nodemon'
@@ -102,12 +101,15 @@ module.exports = (grunt) ->
     'clean:public'
     'concat:coffee'
     'coffee'
+    'clean:coffee'
+    'less:prod'
     'concat:preJs'
     'concat:postJs'
-    'clean:coffee'
     'copy:maps'
+    'copy:img'
+    'copy:fonts'
   ]
   grunt.registerTask 'test', ['default', 'coffee:clientSpecs']
-  grunt.registerTask 'default', ['cs', 'less:prod']
+  grunt.registerTask 'default', ['cs']
   grunt.registerTask 'production', ['default']
   grunt.registerTask 'heroku', ['default']

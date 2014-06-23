@@ -54,13 +54,14 @@ app.factory 'Models', (IN, $q) ->
 
   class LinkedInProfiles extends ApiModel
 
-    notPrivatePredicate = (profile) -> profile.id isnt 'private'
+    validProfilePredicate = (profile) ->
+      profile.id isnt 'private' and profile.pictureUrl?.length
 
     @collection: true
 
     find: ->
       super.then (profiles) ->
-        profiles = _.filter profiles, notPrivatePredicate
+        profiles = _.filter profiles, validProfilePredicate
         @__cache = _.map profiles, (profile) ->
           new LinkedInProfile data: profile, __loaded: true
 

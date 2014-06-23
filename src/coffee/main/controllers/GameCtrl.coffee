@@ -17,12 +17,10 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService) ->
 
   @decreaseCards = ->
 
-  @start = ->
+  @start = (viewModels, numOfCards) ->
     @timer = true
-    @cards = CardService.shuffle @cardViewModels
-    window.cards = @cards
-    console.log @cards
-    @cards
+    shuffledPairs = CardService.shuffle viewModels
+    @cards = CardService.shuffle _.flatten shuffledPairs[0...(numOfCards / 2)]
 
   @stop = ->
     @timer = false

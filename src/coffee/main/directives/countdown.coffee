@@ -5,19 +5,23 @@ app.directive 'emCountdown', ($interval, $parse) ->
   link: ($scope, $elem, $attrs) ->
     clock = null
 
+    appendSeconds = (($elem, left) ->
+      $elem.text "#{left}s"
+    ).bind null, $elem
+
     runClock = (duration = 60000) ->
       start = _.now()
       duration = duration / 1000
       left = duration - (((_.now() - start) / 1000) | 0)
-      $elem.text left
+      appendSeconds left
       $interval ->
         left = duration - (((_.now() - start) / 1000) | 0)
         if left < 0
-          $elem.text 0
+          appendSeconds 0
           $scope.emCountdown = false
           stopClock()
           return
-        $elem.text left
+        appendSeconds left
       , 1000, 0, false
 
     stopClock = ->

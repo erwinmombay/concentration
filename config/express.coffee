@@ -3,7 +3,7 @@ express = require 'express'
 bodyParser = require 'body-parser'
 methodOverride = require 'method-override'
 logger = require 'morgan'
-errorHandler = require 'errorHandler'
+errorHandler = require 'errorhandler'
 { __express } = require 'jade'
 
 module.exports = (app) ->
