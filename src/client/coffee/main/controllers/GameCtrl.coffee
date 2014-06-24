@@ -11,6 +11,8 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
   @cardMultiplier = 10
   @difficulties = ['easy', 'medium', 'hard']
   @matchedCards = []
+  @showImg = false
+  @imageFxCtr = 0
 
   # NOTE: i would prefer to use `bind` than fat arrow (as to not create closures)
   # but this is just a quicker solution for now.
@@ -40,5 +42,14 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
   @win = ->
 
   @lose = ->
+
+  $scope.$on 'fade-down enter', (->
+    @showImg = true
+  ).bind @
+
+  $scope.$watch 'gameCtrl.timer', ((gameTimer) ->
+    console.log 'b'
+    @showImg = false
+  ).bind @
 
   return this

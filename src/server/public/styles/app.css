@@ -5630,6 +5630,9 @@ button.close {
     display: none !important;
   }
 }
+.cards .panel.doge {
+  background-image: url(../img/1.jpg);
+}
 .sidebar {
   position: fixed;
   top: 0;
@@ -5650,7 +5653,6 @@ button.close {
   padding-left: 10px;
 }
 .card {
-  background: white;
   /*margin: 0 12px 12px 0;*/
   box-shadow: -1px 1px 3px 1px #d3d3d3;
   border-radius: 3px;
@@ -5660,9 +5662,16 @@ button.close {
   box-sizing: border-box;
   text-align: center;
   height: 140px;
+  background-color: #F9F9F9;
 }
 .card.matched {
   visibility: hidden;
+}
+.card .card-info {
+  padding-top: 30px;
+}
+.card .question-mark {
+  text-align: center;
 }
 .card-data-container,
 .card-img {
@@ -5703,6 +5712,8 @@ button.close {
 }
 /* front pane, placed above back */
 .front {
+  width: 100%;
+  font-size: 50px;
   z-index: 2;
 }
 /* back, initially hidden pane */

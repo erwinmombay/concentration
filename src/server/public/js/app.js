@@ -151,6 +151,8 @@
     this.cardMultiplier = 10;
     this.difficulties = ['easy', 'medium', 'hard'];
     this.matchedCards = [];
+    this.showImg = false;
+    this.imageFxCtr = 0;
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
@@ -186,6 +188,13 @@
     };
     this.win = function() {};
     this.lose = function() {};
+    $scope.$on('fade-down enter', (function() {
+      return this.showImg = true;
+    }).bind(this));
+    $scope.$watch('gameCtrl.timer', (function(gameTimer) {
+      console.log('b');
+      return this.showImg = false;
+    }).bind(this));
     return this;
   });
 

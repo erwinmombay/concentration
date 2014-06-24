@@ -90,7 +90,7 @@ module.exports = (grunt) ->
         files: [
           expand: true
           cwd: 'src/client/img'
-          src: ['*.jpg']
+          src: ['*.jpg', '*.png']
           dest: 'src/server/public/img'
         ]
       maps:
