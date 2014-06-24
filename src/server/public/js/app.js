@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  app = angular.module('concentration', ['ngAnimate', 'fx.animations']);
+  app = angular.module('concentration', ['ngAnimate', 'fx.animations', 'ui.bootstrap.modal']);
 
   _.mixin({
     flip: function(f) {
@@ -138,7 +138,7 @@
     return this;
   });
 
-  app.controller('GameCtrl', function($scope, LoginService, CardService) {
+  app.controller('GameCtrl', function($scope, LoginService, CardService, $modal) {
     this.cardViewModels = [];
     this.cards = [];
     this.timer = false;
@@ -194,49 +194,51 @@
     };
   });
 
-  app.directive('emCountdown', function($interval, $parse) {
+  app.directive('emCountdown', function($timeout) {
     return {
       scope: {
         emCountdown: '=',
-        emCountdownDuration: '&'
+        emCountdownDuration: '&',
+        emCountdownEnd: '&?'
       },
       link: function($scope, $elem, $attrs) {
-        var appendSeconds, clock, runClock, stopClock;
+        var appendSeconds, clock, now, stopClock, tickClock, _ref;
         clock = null;
-        appendSeconds = (function($elem, left) {
-          $elem.text("" + left + "s");
+        now = ((_ref = window.performance) != null ? _ref.now : void 0) != null ? window.performance.now.bind(window.performance) : _.now;
+        appendSeconds = (function($elem, ms) {
+          var s;
+          s = (ms / 1000) | 0;
+          $elem.text("" + s + "s");
         }).bind(null, $elem);
-        runClock = function(duration) {
-          var left, start;
+        tickClock = function(startTime, left, duration) {
           if (duration == null) {
             duration = 60000;
           }
-          start = _.now();
-          duration = duration / 1000;
-          left = duration - (((_.now() - start) / 1000) | 0);
+          stopClock(clock);
           appendSeconds(left);
-          return $interval(function() {
-            left = duration - (((_.now() - start) / 1000) | 0);
-            if (left < 0) {
-              appendSeconds(0);
+          left = duration - (now() - startTime);
+          if (left <= 0) {
+            $scope.$apply(function() {
               $scope.emCountdown = false;
-              stopClock();
-              return;
-            }
-            return appendSeconds(left);
-          }, 1000, 0, false);
+              return $scope.emCountdownEnd();
+            });
+            return;
+          }
+          return clock = $timeout(tickClock.bind(null, startTime, left, duration), 1000, false);
         };
-        stopClock = function() {
+        stopClock = function(clock) {
           if (clock != null) {
-            $interval.cancel(clock);
+            $timeout.cancel(clock);
           }
           return clock = null;
         };
         $scope.$watch('emCountdown', function(newVal, oldVal, scope) {
+          var duration;
           if (!!newVal) {
-            return clock = runClock(scope.emCountdownDuration());
+            duration = scope.emCountdownDuration();
+            return clock = tickClock(now(), duration, duration);
           } else {
-            return stopClock();
+            return stopClock(clock);
           }
         });
         return $scope.$on('$destroy', stopClock);
@@ -459,16 +461,16 @@
       return (Math.ceil((numOfCards / 10) * difficulty)) * 1000;
     };
     this.increaseCards = function(count) {
-      if ((this.numOfCards + count) >= (gameCtrl.cardViewModels.length * 2)) {
+      if ((gameCtrl.numOfCards + count) >= (gameCtrl.cardViewModels.length * 2)) {
         return;
       }
-      return this.numOfCards += count;
+      return gameCtrl.numOfCards += count;
     };
     this.decreaseCards = function(count) {
-      if (this.numOfCards <= 10) {
+      if (gameCtrl.numOfCards <= 10) {
         return;
       }
-      return this.numOfCards -= count;
+      return gameCtrl.numOfCards -= count;
     };
     this.isDifficultyBtnActive = function(difficulty) {
       return gameCtrl.curDifficulty === difficulty;

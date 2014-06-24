@@ -1,4 +1,4 @@
-app.controller 'GameCtrl', ($scope, LoginService, CardService) ->
+app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
   @cardViewModels = []
   @cards = []
   @timer = false

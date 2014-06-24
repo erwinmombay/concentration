@@ -1,39 +1,43 @@
-app.directive 'emCountdown', ($interval, $parse) ->
+app.directive 'emCountdown', ($timeout) ->
   scope:
     emCountdown: '='
     emCountdownDuration: '&'
+    emCountdownEnd: '&?'
   link: ($scope, $elem, $attrs) ->
     clock = null
+    now =
+      if window.performance?.now?
+        window.performance.now.bind window.performance
+      else _.now
 
     # jQuery a -> Int -> ()
-    appendSeconds = (($elem, left) ->
-      $elem.text "#{left}s"
+    appendSeconds = (($elem, ms) ->
+      s = (ms / 1000) | 0
+      $elem.text "#{s}s"
       return
     ).bind null, $elem
 
-    # Int -> Promise
-    runClock = (duration = 60000) ->
-      start = _.now()
-      duration = duration / 1000
-      left = duration - (((_.now() - start) / 1000) | 0)
+    # NOTE: we use $timeout instead of interval since it calls `evalAsync`
+    # and causes a digest loop each time even does invokeApply option is false
+    tickClock = (startTime, left, duration = 60000) ->
+      stopClock clock
       appendSeconds left
-      $interval ->
-        left = duration - (((_.now() - start) / 1000) | 0)
-        if left < 0
-          appendSeconds 0
+      left = duration - (now() - startTime)
+      if left <= 0
+        $scope.$apply ->
           $scope.emCountdown = false
-          stopClock()
-          return
-        appendSeconds left
-      , 1000, 0, false
+          $scope.emCountdownEnd()
+        return
+      clock = $timeout tickClock.bind(null, startTime, left, duration), 1000, false
 
-    stopClock = ->
-      $interval.cancel clock if clock?
+    stopClock = (clock) ->
+      $timeout.cancel clock if clock?
       clock = null
 
     $scope.$watch 'emCountdown', (newVal, oldVal, scope) ->
       if !!newVal
-        clock = runClock scope.emCountdownDuration()
-      else stopClock()
+        duration = scope.emCountdownDuration()
+        clock = tickClock now(), duration, duration
+      else stopClock clock
 
     $scope.$on '$destroy', stopClock

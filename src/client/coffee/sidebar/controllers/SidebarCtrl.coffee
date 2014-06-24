@@ -14,13 +14,13 @@ app.controller 'SidebarCtrl', ($scope) ->
 
   # Int -> Int
   @increaseCards = (count) ->
-    return if (@numOfCards + count) >= (gameCtrl.cardViewModels.length * 2)
-    @numOfCards += count
+    return if (gameCtrl.numOfCards + count) >= (gameCtrl.cardViewModels.length * 2)
+    gameCtrl.numOfCards += count
 
   # Int -> Int
   @decreaseCards = (count) ->
-    return if @numOfCards <= 10
-    @numOfCards -= count
+    return if gameCtrl.numOfCards <= 10
+    gameCtrl.numOfCards -= count
 
   # String -> Boolean
   @isDifficultyBtnActive = (difficulty) ->
