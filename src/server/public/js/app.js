@@ -241,19 +241,12 @@
     return this;
   });
 
-  app.directive('emCard', function($compile) {
-    return {
-      transclude: 'element',
-      link: function($scope, $elem, $attrs, $transclude) {}
-    };
-  });
-
   app.directive('emCountdown', function($timeout) {
     return {
       scope: {
         emCountdown: '=',
         emCountdownDuration: '&',
-        emCountdownEnd: '&?'
+        emCountdownEnd: '&'
       },
       link: function($scope, $elem, $attrs) {
         var appendSeconds, clock, now, stopClock, tickClock, _ref;
@@ -294,7 +287,7 @@
               return;
             }
             return clock = tickClock(now(), duration, duration);
-          } else {
+          } else if (clock != null) {
             return stopClock(clock);
           }
         });

@@ -2,7 +2,7 @@ app.directive 'emCountdown', ($timeout) ->
   scope:
     emCountdown: '='
     emCountdownDuration: '&'
-    emCountdownEnd: '&?'
+    emCountdownEnd: '&'
   link: ($scope, $elem, $attrs) ->
     clock = null
     now =
@@ -39,6 +39,7 @@ app.directive 'emCountdown', ($timeout) ->
         duration = scope.emCountdownDuration()
         return if duration <= 0
         clock = tickClock now(), duration, duration
-      else stopClock clock
+      else if clock?
+        stopClock clock
 
     $scope.$on '$destroy', stopClock
