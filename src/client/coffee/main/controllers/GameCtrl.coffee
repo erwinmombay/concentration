@@ -46,29 +46,20 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     shuffledPairs = CardService.shuffle pairedViewModels
     CardService.shuffle _.flatten shuffledPairs[0...(numOfCards / 2)]
 
-  @win = ->
+
+  @createModal = (text) ->
     modal = $modal.open
       templateUrl: 'gameModal.html'
       controller: 'GameModalCtrl'
       resolve:
-        infoText: -> 'Congratulations! You get to see doge!'
+        infoText: -> text
     modal.result.then @stop.bind @
 
-  @lose = ->
-    modal = $modal.open
-      templateUrl: 'gameModal.html'
-      controller: 'GameModalCtrl'
-      resolve:
-        infoText: -> 'Aww too bad! You don\'t get to see the image yet :(.'
-    modal.result.then @stop.bind @
+  @win = -> @createModal 'Congratulations! You get to see doge!'
 
-  $scope.$on 'fade-down enter', (->
-    @showImg = true
-  ).bind @
+  @lose = -> @createModal 'Aww too bad! You don\'t get to see the image yet :(.'
 
-  $scope.$watch 'gameCtrl.timer', ((gameTimer) ->
-    console.log 'b'
-    @showImg = false
-  ).bind @
+  $scope.$on 'fade-down enter', (-> @showImg = true).bind @
+  $scope.$watch 'gameCtrl.timer', ((gameTimer) -> @showImg = false).bind @
 
   return this

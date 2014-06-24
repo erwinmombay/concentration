@@ -2,8 +2,9 @@ app.controller 'SidebarCtrl', ($scope) ->
   { gameCtrl } = $scope
 
   @instructions = """
-      Instructions: Difficulty settings control a certain multipler
-      using the number of cards which ends up as the duration of the game.
+      Instructions: Press the start button to begin.
+      The duration of the game is based on the difficulty (multiplier) and
+      the number of cards.
       The "hard" difficulty also closes the flipped over card (or the pair)
       after a couple of seconds.
   """

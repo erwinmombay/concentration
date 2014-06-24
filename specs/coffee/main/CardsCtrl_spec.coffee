@@ -10,20 +10,21 @@ describe 'CardsCtrl:', ->
     $rootScope
   ) ->
     scope = $rootScope.$new()
-    ctrl = $controller 'CardsCtrl',
-      $scope: scope
     card1 = id: 1, matched: false, flipped: false, type: 'info'
     card2 = id: 2, matched: false, flipped: false
     card3 = id: 3, matched: false, flipped: false
     card1a = id: 1, matched: false, flipped: false, type: 'img'
-    scope.gameCtrl = 
+    scope.gameCtrl =
       cards: [card1, card1a]
       timer: true
       win: ->
       lose: ->
+      matchedCards: []
     spyOn scope.gameCtrl, 'win'
     spyOn scope.gameCtrl, 'lose'
     pair = []
+    ctrl = $controller 'CardsCtrl',
+      $scope: scope
 
   describe 'clicking on a card', ->
     describe 'when the timer is on', ->

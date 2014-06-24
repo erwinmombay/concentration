@@ -7,9 +7,6 @@
     beforeEach(module(moduleName));
     beforeEach(inject(function($controller, $rootScope) {
       scope = $rootScope.$new();
-      ctrl = $controller('CardsCtrl', {
-        $scope: scope
-      });
       card1 = {
         id: 1,
         matched: false,
@@ -36,11 +33,15 @@
         cards: [card1, card1a],
         timer: true,
         win: function() {},
-        lose: function() {}
+        lose: function() {},
+        matchedCards: []
       };
       spyOn(scope.gameCtrl, 'win');
       spyOn(scope.gameCtrl, 'lose');
-      return pair = [];
+      pair = [];
+      return ctrl = $controller('CardsCtrl', {
+        $scope: scope
+      });
     }));
     return describe('clicking on a card', function() {
       describe('when the timer is on', function() {

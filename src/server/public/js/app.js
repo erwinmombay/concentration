@@ -205,37 +205,29 @@
       shuffledPairs = CardService.shuffle(pairedViewModels);
       return CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2)));
     };
-    this.win = function() {
+    this.createModal = function(text) {
       var modal;
       modal = $modal.open({
         templateUrl: 'gameModal.html',
         controller: 'GameModalCtrl',
         resolve: {
           infoText: function() {
-            return 'Congratulations! You get to see doge!';
+            return text;
           }
         }
       });
       return modal.result.then(this.stop.bind(this));
     };
+    this.win = function() {
+      return this.createModal('Congratulations! You get to see doge!');
+    };
     this.lose = function() {
-      var modal;
-      modal = $modal.open({
-        templateUrl: 'gameModal.html',
-        controller: 'GameModalCtrl',
-        resolve: {
-          infoText: function() {
-            return 'Aww too bad! You don\'t get to see the image yet :(.';
-          }
-        }
-      });
-      return modal.result.then(this.stop.bind(this));
+      return this.createModal('Aww too bad! You don\'t get to see the image yet :(.');
     };
     $scope.$on('fade-down enter', (function() {
       return this.showImg = true;
     }).bind(this));
     $scope.$watch('gameCtrl.timer', (function(gameTimer) {
-      console.log('b');
       return this.showImg = false;
     }).bind(this));
     return this;
@@ -507,7 +499,7 @@
   app.controller('SidebarCtrl', function($scope) {
     var gameCtrl;
     gameCtrl = $scope.gameCtrl;
-    this.instructions = "Instructions: Difficulty settings control a certain multipler\nusing the number of cards which ends up as the duration of the game.\nThe \"hard\" difficulty also closes the flipped over card (or the pair)\nafter a couple of seconds.";
+    this.instructions = "Instructions: Press the start button to begin.\nThe duration of the game is based on the difficulty (multiplier) and\nthe number of cards.\nThe \"hard\" difficulty also closes the flipped over card (or the pair)\nafter a couple of seconds.";
     this.getDuration = function(numOfCards, difficulty) {
       if (numOfCards == null) {
         numOfCards = 0;
