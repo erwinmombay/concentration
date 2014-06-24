@@ -13,6 +13,7 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
   @matchedCards = []
   @showImg = false
   @imageFxCtr = 0
+  @matchAttempts = 0
 
   resetPairedViewModels = (pairedViewModels) ->
     for pair in pairedViewModels
@@ -32,13 +33,14 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     resetPairedViewModels cardViewModels
     @timer = true
     @matchedCards.length = 0
+    @matchAttempts = 0
     @cards[0..] = @generateCards cardViewModels, numOfCards
 
   # []
   @stop = (cardViewModels = @cardViewModels) ->
     resetPairedViewModels cardViewModels
     @timer = false
-    @cards.length = 0
+    @matchAttempts = @cards.length = 0
     @cards
 
   # [(CardViewModel, CardViewModel)] -> Int [CardViewModel]
@@ -58,9 +60,9 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     modal.result.then @stop.bind @
     modal
 
-  @win = -> @createModal 'Congratulations! You get to see doge!'
+  @win = -> @createModal """Congratulations! You get to see doge!"""
 
-  @lose = -> @createModal 'Aww too bad! You don\'t get to see the image yet :(.'
+  @lose = -> @createModal """Aww too bad, times up! You don\'t get to see the image yet :(."""
 
   $scope.$on 'fade-down enter', (-> @showImg = true).bind @
   $scope.$watch 'gameCtrl.timer', ((gameTimer) -> @showImg = false).bind @

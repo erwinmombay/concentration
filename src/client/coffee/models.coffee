@@ -9,6 +9,9 @@ app.factory 'Models', (IN, $q) ->
         store[name][instance.id] = instance
 
 
+  # NOTE: alot of the work here should really be delegated to an Adapter
+  # object or a Query object but just to finish this faster we'll consolidate
+  # it in the ApiModel class.
   class ApiModel
 
     constructor: ({ query, data, @__loaded } = {}) ->

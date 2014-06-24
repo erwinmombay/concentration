@@ -37,6 +37,7 @@ app.controller 'CardsCtrl', ($scope, $timeout) ->
     pair.push card
 
     if pair.length is 2
+      ++gameCtrl.matchAttempts
       if isMatch pair...
         [a, b] = pair
         a.matched = b.matched = true

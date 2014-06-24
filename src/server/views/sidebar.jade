@@ -32,5 +32,9 @@
     li(data-ng-show='gameCtrl.timer')
       span(data-ng-bind-template='Number of Cards Left: {{gameCtrl.numOfCards - gameCtrl.matchedCards.length}}')
 
+    li(data-ng-show='gameCtrl.timer')
+      span(data-ng-bind-template='Number of Attempts: {{gameCtrl.matchAttempts}}')
+
+
   //-ul.nav.nav-sidebar.scores
     //-li Scores:

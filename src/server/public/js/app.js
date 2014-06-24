@@ -122,6 +122,7 @@
       card.flipped = true;
       pair.push(card);
       if (pair.length === 2) {
+        ++gameCtrl.matchAttempts;
         if (isMatch.apply(null, pair)) {
           a = pair[0], b = pair[1];
           a.matched = b.matched = true;
@@ -159,6 +160,7 @@
     this.matchedCards = [];
     this.showImg = false;
     this.imageFxCtr = 0;
+    this.matchAttempts = 0;
     resetPairedViewModels = function(pairedViewModels) {
       var item, pair, _i, _len, _results;
       _results = [];
@@ -195,6 +197,7 @@
       resetPairedViewModels(cardViewModels);
       this.timer = true;
       this.matchedCards.length = 0;
+      this.matchAttempts = 0;
       return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(cardViewModels, numOfCards))), _ref);
     };
     this.stop = function(cardViewModels) {
@@ -203,7 +206,7 @@
       }
       resetPairedViewModels(cardViewModels);
       this.timer = false;
-      this.cards.length = 0;
+      this.matchAttempts = this.cards.length = 0;
       return this.cards;
     };
     this.generateCards = function(pairedViewModels, numOfCards) {
@@ -227,10 +230,10 @@
       return modal;
     };
     this.win = function() {
-      return this.createModal('Congratulations! You get to see doge!');
+      return this.createModal("Congratulations! You get to see doge!");
     };
     this.lose = function() {
-      return this.createModal('Aww too bad! You don\'t get to see the image yet :(.');
+      return this.createModal("Aww too bad, times up! You don\'t get to see the image yet :(.");
     };
     $scope.$on('fade-down enter', (function() {
       return this.showImg = true;
