@@ -23,10 +23,15 @@
   });
 
   app.controller('AppCtrl', function($scope, LoginService) {
+    this.appReady = false;
     _.extend(this, LoginService);
-    LoginService.getUserAsync().then(function(user) {
-      return user.connections.find().then(function(connections) {});
-    });
+    LoginService.getUserAsync().then((function(_this) {
+      return function(user) {
+        return user.connections.find().then(function(connections) {
+          return _this.appReady = true;
+        });
+      };
+    })(this));
     return this;
   });
 
@@ -115,7 +120,6 @@
   });
 
   app.controller('GameCtrl', function($scope, LoginService, CardService) {
-    this.gameReady = false;
     this.cardViewModels = [];
     this.cards = [];
     this.timer = false;
@@ -125,33 +129,30 @@
       medium: 30,
       hard: 15
     };
-    this.curDifficulty = this.difficulty.easy;
+    this.curDifficulty = 'easy';
+    this.cardMultiplier = 10;
+    this.difficulties = ['easy', 'medium', 'hard'];
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
           var _ref;
-          _this.gameReady = true;
           return ([].splice.apply(_this.cardViewModels, [0, 9e9].concat(_ref = CardService.buildCardViewModels(connections))), _ref);
         });
       };
     })(this));
-    this.duration = function(numOfCards, difficulty) {
-      if (numOfCards == null) {
-        numOfCards = 0;
-      }
-      if (difficulty == null) {
-        difficulty = this.difficulty.easy;
-      }
-      return (Math.ceil((numOfCards / 10) * difficulty)) * 1000;
-    };
-    this.increaseCards = function() {};
-    this.decreaseCards = function() {};
     this.start = function(pairedViewModels, numOfCards) {
-      var item, pair, shuffledPairs, _i, _j, _len, _len1, _ref;
       if (numOfCards == null) {
         numOfCards = 20;
       }
       this.timer = true;
+      return this.generateCards(pairedViewModels, this.cards, numOfCards);
+    };
+    this.stop = function() {
+      this.timer = false;
+      return this.cards.length = 0;
+    };
+    this.generateCards = function(pairedViewModels, cards, numOfCards) {
+      var item, pair, shuffledPairs, _i, _j, _len, _len1, _ref;
       for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
         pair = pairedViewModels[_i];
         for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
@@ -160,12 +161,10 @@
         }
       }
       shuffledPairs = CardService.shuffle(pairedViewModels);
-      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2))))), _ref);
+      return ([].splice.apply(cards, [0, 9e9].concat(_ref = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2))))), _ref);
     };
-    this.stop = function() {
-      this.timer = false;
-      return this.cards.length = 0;
-    };
+    this.win = function() {};
+    this.lose = function() {};
     return this;
   });
 
@@ -416,6 +415,43 @@
       LinkedInProfile: LinkedInProfile,
       LinkedInProfiles: LinkedInProfiles
     };
+  });
+
+  app.controller('SidebarCtrl', function($scope) {
+    var gameCtrl;
+    gameCtrl = $scope.gameCtrl;
+    this.instructions = "Difficulty settings control a certain multipler using the number of cards which\nends up as the duration of the game.\nThe \"hard\" difficulty also closes the flipped over card after a couple of seconds.";
+    this.getDuration = function(numOfCards, difficulty) {
+      if (numOfCards == null) {
+        numOfCards = 0;
+      }
+      if (difficulty == null) {
+        difficulty = this.difficulty.easy;
+      }
+      return (Math.ceil((numOfCards / 10) * difficulty)) * 1000;
+    };
+    this.increaseCards = function(count) {
+      if ((this.numOfCards + count) >= (gameCtrl.cardViewModels.length * 2)) {
+        return;
+      }
+      return this.numOfCards += count;
+    };
+    this.decreaseCards = function(count) {
+      if (this.numOfCards <= 10) {
+        return;
+      }
+      return this.numOfCards -= count;
+    };
+    this.isDifficultyBtnActive = function(difficulty) {
+      return gameCtrl.curDifficulty === difficulty;
+    };
+    this.setDifficulty = function(difficulty) {
+      if (gameCtrl.timer) {
+        return;
+      }
+      return gameCtrl.curDifficulty = difficulty;
+    };
+    return this;
   });
 
 }).call(this);

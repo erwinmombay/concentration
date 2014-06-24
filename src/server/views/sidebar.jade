@@ -1,1 +1,36 @@
-.col-sm-3.col-md-2.sidebar
+.col-md-2.sidebar(data-ng-controller='SidebarCtrl as sidebarCtrl')
+  ul.nav.nav-sidebar
+    li
+      .panel.panel-default
+        .panel-body(data-ng-bind='sidebarCtrl.instructions')
+  ul.nav.nav-sidebar(data-ng-show='appCtrl.appReady')
+    li
+      button.btn.btn-success(type='button',
+        data-ng-click='gameCtrl.start(gameCtrl.cardViewModels, gameCtrl.numOfCards)',
+        data-ng-hide='gameCtrl.timer') Start Game
+      button.btn.btn-danger(type='button',
+        data-ng-click='gameCtrl.stop()',
+        data-ng-show='gameCtrl.timer') Stop Game
+    li
+      span(data-ng-hide='gameCtrl.timer') Time Left: Not Started
+      span(data-ng-show='gameCtrl.timer') Time Left: 
+      span(data-ng-show='gameCtrl.timer', em-countdown='gameCtrl.timer',
+        em-countdown-duration='sidebarCtrl.getDuration(gameCtrl.cards.length, gameCtrl.difficulty[gameCtrl.curDifficulty])')
+
+    li
+      span(data-ng-bind-template='Number of Cards: {{gameCtrl.numOfCards}}')
+      .btn-group.card-count(data-ng-hide='gameCtrl.timer')
+        .btn.btn-xs.btn-primary(href="#",
+          data-ng-click='sidebarCtrl.decreaseCards(gameCtrl.cardMultiplier)') &laquo;
+        .btn.btn-xs.btn-primary(href="#",
+          data-ng-click='sidebarCtrl.increaseCards(gameCtrl.cardMultiplier)') &raquo;
+
+    li
+      .btn-group
+        .btn.btn-sm.btn-default(data-ng-repeat='diff in gameCtrl.difficulties',
+          data-ng-click='sidebarCtrl.setDifficulty(diff)',
+          data-ng-class='{active: sidebarCtrl.isDifficultyBtnActive(diff), disabled: gameCtrl.timer}',
+          data-ng-bind='diff')
+
+  ul.nav.nav-sidebar.scores
+    li Scores:

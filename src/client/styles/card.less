@@ -19,36 +19,3 @@
     height: 100%;
   }
 }
-
-/* entire container, keeps perspective */
-.flip-container {
-  .perspective(1000);
-}
-
-.flip-container.flip .flipper {
-  .rotateY(180deg);
-}
-
-.flipper {
-  .transition(0.2s);
-  transform-style: preserve-3d;
-  position: relative;
-}
-
-/* hide back of pane during swap */
-.front, .back {
-  .backface-visibility(hidden);
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* front pane, placed above back */
-.front {
-  z-index: 2;
-}
-
-/* back, initially hidden pane */
-.back {
-  .rotateY(180deg);
-}

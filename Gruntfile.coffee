@@ -38,10 +38,12 @@ module.exports = (grunt) ->
         files:
           'src/server/public/js/app.js': ['<%= paths.client.build %>/build.coffee']
       clientSpecs:
-        files: grunt.file.expandMapping(["specs/coffee/**/*.coffee"], "specs/js/", {
+        files: (grunt.file.expandMapping ['specs/coffee/**/*.coffee'], 'specs/js/',
           rename: (destBase, destPath) ->
-            destBase + destPath.replace(/\.coffee$/, ".js").replace(/specs\//, "")
-        })
+            "#{destBase}#{destPath
+                .replace(/\.coffee$/, ".js")
+                .replace(/// specs/ ///, "")}"
+        )
 
     less:
       prod:

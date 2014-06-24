@@ -2,10 +2,13 @@ extends layout
 
 block content
   #conc-app(data-ng-app='concentration', data-ng-controller='AppCtrl as appCtrl', data-ng-cloak)
-    include ngTemplates/card
-    include navbar
-    .container-fluid(ng-if='appCtrl.isLoggedIn()')
+    include ngTemplates/cards
+    .container(data-ng-if='appCtrl.isLoggedIn()' data-ng-controller='GameCtrl as gameCtrl')
       .row
+        .col-md-6.col-md-offset-4
+          .progress.progress-striped.active(data-ng-if='!appCtrl.appReady')
+            .progress-bar(role='progressbar', aria-valuenow='100',
+              aria-valuemin='100', aria-valuemax='100' style='width: 100%') Loading Data...
         include sidebar
         include main
 

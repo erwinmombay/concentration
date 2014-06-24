@@ -8,9 +8,13 @@ _.mixin
 
 
 app.controller 'AppCtrl', ($scope, LoginService) ->
+  @appReady = false
   _.extend @, LoginService
-  LoginService.getUserAsync().then (user) ->
-    user.connections.find().then (connections) ->
+  # NOTE: i would prefer to use `bind` than fat arrow (as to not create closures)
+  # but this is just a quicker solution for now.
+  LoginService.getUserAsync().then (user) =>
+    user.connections.find().then (connections) =>
+      @appReady = true
   return this
 
 
