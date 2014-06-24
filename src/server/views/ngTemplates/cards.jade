@@ -1,7 +1,7 @@
 script(type='text/ng-template', id='cards.html')
   .card.col-xs-3.col-md-2.fx-fade-down.fx-speed-600(
     data-ng-click='cardsCtrl.onCardClick(card)',
-    data-ng-class='{"matched": card.matched}',
+    data-ng-class='{"matched": card.matched, "col-md-offset-1": !($index  % 5)}',
     data-ng-repeat='card in gameCtrl.cards track by card.cid')
     .card-data-container.flip-container(data-ng-class='{flip: card.flipped}')
       .flipper

@@ -1,6 +1,6 @@
-.col-md-9.col-md-offset-3.main
+.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
   .cards.row
     .col-md-12(data-ng-controller='CardsCtrl as cardsCtrl' data-ng-if='appCtrl.appReady')
-      //-img.container-img(src='img/1.jpg')
-      .cards-container
-        .row(data-ng-include='"cards.html"')
+      .panel.panel-default
+        .panel-body
+          .row(data-ng-include='"cards.html"')
