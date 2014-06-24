@@ -39,3 +39,4 @@ app.factory 'CardService', ->
       img = buildCardViewModel profile, 'img'
       [info, img]
 
+  CardViewModel: CardViewModel

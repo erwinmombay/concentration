@@ -60,7 +60,10 @@ app.factory 'Models', (IN, $q) ->
     # Object
     value: -> @__cache
 
-    toJSON: -> _.clone @
+    toJSON: ->
+      clone = _.clone @
+      delete clone[key] for own key, val of clone when /^__/.test key
+      clone
 
 
   class LinkedInProfiles extends ApiModel

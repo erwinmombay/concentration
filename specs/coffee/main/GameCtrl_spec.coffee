@@ -1,6 +1,6 @@
 describe 'GameCtrl: ', ->
   moduleName = 'concentration'
-  [scope, ctrl] = []
+  [scope, ctrl, pvm] = []
 
   beforeEach module moduleName
 
@@ -8,8 +8,18 @@ describe 'GameCtrl: ', ->
   (
     $rootScope
     $controller
+    CardService
+    Models
   ) ->
     scope = $rootScope.$new()
+    raw = null
+    IN.API.Connections().result (data) ->
+      raw = data.values
+    IN.API.Connections.$flush()
+    models = for data in raw
+      new Models.LinkedInProfile data: data, __loaded: true
+    pvm = CardService.buildCardViewModels models
+
 
     ctrl = $controller 'GameCtrl',
       $scope: scope
@@ -39,8 +49,17 @@ describe 'GameCtrl: ', ->
 
   describe 'starting a game', ->
 
-    beforeEach ->
+    beforeEach -> ctrl.start()
 
-    it 'should be able to start a new game', ->
+    it 'should set the timer to true', ->
+      expect(ctrl.timer).toBe true
+
+    it 'should generated a shuffled set of cards', ->
 
   describe 'stopping a game', ->
+
+  describe 'resetting a game', ->
+
+  describe 'winning a game', ->
+
+  describe ' losing a game', ->

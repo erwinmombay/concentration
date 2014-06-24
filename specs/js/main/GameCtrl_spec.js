@@ -2,12 +2,31 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   describe('GameCtrl: ', function() {
-    var ctrl, moduleName, scope, _ref;
+    var ctrl, moduleName, pvm, scope, _ref;
     moduleName = 'concentration';
-    _ref = [], scope = _ref[0], ctrl = _ref[1];
+    _ref = [], scope = _ref[0], ctrl = _ref[1], pvm = _ref[2];
     beforeEach(module(moduleName));
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function($rootScope, $controller, CardService, Models) {
+      var data, models, raw;
       scope = $rootScope.$new();
+      raw = null;
+      IN.API.Connections().result(function(data) {
+        return raw = data.values;
+      });
+      IN.API.Connections.$flush();
+      models = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = raw.length; _i < _len; _i++) {
+          data = raw[_i];
+          _results.push(new Models.LinkedInProfile({
+            data: data,
+            __loaded: true
+          }));
+        }
+        return _results;
+      })();
+      pvm = CardService.buildCardViewModels(models);
       return ctrl = $controller('GameCtrl', {
         $scope: scope
       });
@@ -42,10 +61,18 @@
       });
     });
     describe('starting a game', function() {
-      beforeEach(function() {});
-      return it('should be able to start a new game', function() {});
+      beforeEach(function() {
+        return ctrl.start();
+      });
+      it('should set the timer to true', function() {
+        return expect(ctrl.timer).toBe(true);
+      });
+      return it('should generated a shuffled set of cards', function() {});
     });
-    return describe('stopping a game', function() {});
+    describe('stopping a game', function() {});
+    describe('resetting a game', function() {});
+    describe('winning a game', function() {});
+    return describe(' losing a game', function() {});
   });
 
 }).call(this);

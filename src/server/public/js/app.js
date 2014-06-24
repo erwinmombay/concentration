@@ -184,18 +184,24 @@
         });
       };
     })(this));
-    this.start = function(numOfCards) {
+    this.start = function(numOfCards, cardViewModels) {
       var _ref;
       if (numOfCards == null) {
         numOfCards = 20;
       }
-      resetPairedViewModels(this.cardViewModels);
+      if (cardViewModels == null) {
+        cardViewModels = this.cardViewModels;
+      }
+      resetPairedViewModels(cardViewModels);
       this.timer = true;
       this.matchedCards.length = 0;
-      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(this.cardViewModels, numOfCards))), _ref);
+      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(cardViewModels, numOfCards))), _ref);
     };
-    this.stop = function() {
-      resetPairedViewModels(this.cardViewModels);
+    this.stop = function(cardViewModels) {
+      if (cardViewModels == null) {
+        cardViewModels = this.cardViewModels;
+      }
+      resetPairedViewModels(cardViewModels);
       this.timer = false;
       this.cards.length = 0;
       return this.cards;
@@ -210,6 +216,7 @@
       modal = $modal.open({
         templateUrl: 'gameModal.html',
         controller: 'GameModalCtrl',
+        backdrop: 'static',
         resolve: {
           infoText: function() {
             return text;
@@ -355,7 +362,8 @@
           }
           return _results;
         })();
-      }
+      },
+      CardViewModel: CardViewModel
     };
   });
 
@@ -433,7 +441,16 @@
       };
 
       ApiModel.prototype.toJSON = function() {
-        return _.clone(this);
+        var clone, key, val;
+        clone = _.clone(this);
+        for (key in clone) {
+          if (!__hasProp.call(clone, key)) continue;
+          val = clone[key];
+          if (/^__/.test(key)) {
+            delete clone[key];
+          }
+        }
+        return clone;
       };
 
       return ApiModel;

@@ -28,15 +28,15 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
       @cardViewModels[0..] = CardService.buildCardViewModels connections
 
   # Maybe Int -> [CardViewModel]
-  @start = (numOfCards = 20) ->
-    resetPairedViewModels @cardViewModels
+  @start = (numOfCards = 20 , cardViewModels = @cardViewModels) ->
+    resetPairedViewModels cardViewModels
     @timer = true
     @matchedCards.length = 0
-    @cards[0..] = @generateCards @cardViewModels, numOfCards
+    @cards[0..] = @generateCards cardViewModels, numOfCards
 
   # []
-  @stop = ->
-    resetPairedViewModels @cardViewModels
+  @stop = (cardViewModels = @cardViewModels) ->
+    resetPairedViewModels cardViewModels
     @timer = false
     @cards.length = 0
     @cards
@@ -51,6 +51,7 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     modal = $modal.open
       templateUrl: 'gameModal.html'
       controller: 'GameModalCtrl'
+      backdrop: 'static'
       resolve:
         infoText: -> text
     modal.result.then @stop.bind @
