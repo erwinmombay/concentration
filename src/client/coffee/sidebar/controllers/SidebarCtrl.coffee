@@ -10,7 +10,7 @@ app.controller 'SidebarCtrl', ($scope) ->
   """
 
   # Int -> Int -> Int
-  @getDuration = (numOfCards = 0, difficulty = @difficulty.easy) ->
+  @getDuration = (numOfCards = 0, difficulty = gameCtrl.difficulty.easy) ->
     (Math.ceil (numOfCards / 10) * difficulty) * 1000
 
   # Int -> Int

@@ -523,7 +523,7 @@
         numOfCards = 0;
       }
       if (difficulty == null) {
-        difficulty = this.difficulty.easy;
+        difficulty = gameCtrl.difficulty.easy;
       }
       return (Math.ceil((numOfCards / 10) * difficulty)) * 1000;
     };
