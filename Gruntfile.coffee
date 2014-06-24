@@ -9,7 +9,7 @@ module.exports = (grunt) ->
         img: 'src/client/img'
         fonts: 'src/client/fonts'
       server:
-        specs: 'specs/*.coffee'
+        specs: 'specs/coffee/**/*.coffee'
         js: 'src/server/public/js'
         styles: 'src/server/public/styles'
 
@@ -38,13 +38,10 @@ module.exports = (grunt) ->
         files:
           'src/server/public/js/app.js': ['<%= paths.client.build %>/build.coffee']
       clientSpecs:
-        files: (grunt.file.expandMapping ['specs/*.coffee'],
-          'specs/js/',
+        files: grunt.file.expandMapping(["specs/coffee/**/*.coffee"], "specs/js/", {
           rename: (destBase, destPath) ->
-            destBase + destPath
-              .replace(/\.coffee$/, '.js')
-              .replace(/// specs/ ///, '')
-        )
+            destBase + destPath.replace(/\.coffee$/, ".js").replace(/specs\//, "")
+        })
 
     less:
       prod:
@@ -59,7 +56,7 @@ module.exports = (grunt) ->
 
     karma:
       options:
-        configFile: './config/karma.conf.js'
+        configFile: './config/karma.conf.coffee'
         runnerPort: 9999
         reporters: ['dots']
         colors: true

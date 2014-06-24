@@ -63,7 +63,7 @@
     pair = [];
     matches = [];
     isMatch = function(a, b) {
-      return a.id === b.id;
+      return a.id === b.id && a.type !== b.type;
     };
     resetPair = function(a, b) {
       if (a == null) {
@@ -74,28 +74,39 @@
       }
       a.flipped = b.flipped = false;
       pair.length = 0;
+      return pair.slice(0);
     };
     this.onCardClick = function(card) {
       var a, b;
       if (!$scope.gameCtrl.timer) {
-        resetPair(card);
-        return;
+        return pair.slice(0);
       }
       if (__indexOf.call(matches, card) >= 0) {
-        return;
+        return resetPair.apply(null, pair);
+      }
+      if (__indexOf.call(pair, card) >= 0 && pair.length === 1) {
+        return resetPair.apply(null, pair);
       }
       if (pair.length === 2) {
-        if (isMatch.apply(null, pair)) {
-          a = pair[0], b = pair[1];
-          a.matched = b.matched = true;
-          matches.push.apply(matches, pair);
-          pair.length = 0;
-          return;
+        if (__indexOf.call(pair, card) >= 0) {
+          return resetPair.apply(null, pair);
         }
         resetPair.apply(null, pair);
       }
       card.flipped = true;
       pair.push(card);
+      if (pair.length === 2) {
+        if (isMatch.apply(null, pair)) {
+          a = pair[0], b = pair[1];
+          a.matched = b.matched = true;
+          matches.push.apply(matches, pair);
+          if (matches.length === $scope.gameCtrl.cards.length) {
+            $scope.gameCtrl.win();
+          }
+          return resetPair();
+        }
+      }
+      return pair.slice(0);
     };
     $scope.$watch('gameCtrl.timer', function(timer) {
       return pair.length = matches.length = 0;

@@ -22,9 +22,13 @@
   "devDependencies": {
     "grunt-contrib-watch": "~0.6.1",
     "grunt-nodemon": "~0.2.1",
-    "grunt-contrib-jasmine": "~0.6.5",
     "karma": "~0.12.16",
-    "grunt-karma": "~0.8.3"
+    "grunt-karma": "~0.8.3",
+    "jasmine-node": "~1.14.3",
+    "grunt-jasmine": "~0.1.0",
+    "karma-jasmine": "~0.1.5",
+    "karma-chrome-launcher": "~0.1.4",
+    "grunt-contrib-jasmine": "~0.6.5"
   },
   "scripts": {
     "postinstall": "ls -al; ./node_modules/grunt/bin/grunt heroku; cd ./node_modules/grunt/bin; ls -al"

@@ -1,0 +1,3 @@
+window.IN =
+  API:
+    Connections: ->
