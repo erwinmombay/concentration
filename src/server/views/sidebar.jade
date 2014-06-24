@@ -12,7 +12,7 @@
           data-ng-bind='diff')
     li.text-center
       button.btn.btn-success(type='button',
-        data-ng-click='gameCtrl.start(gameCtrl.cardViewModels, gameCtrl.numOfCards)',
+        data-ng-click='gameCtrl.start(gameCtrl.numOfCards)',
         data-ng-hide='gameCtrl.timer') Start Game
       button.btn.btn-danger(type='button',
         data-ng-click='gameCtrl.stop()',
@@ -20,7 +20,7 @@
     li
       span(data-ng-hide='gameCtrl.timer') Time Left: Not Started
       span(data-ng-show='gameCtrl.timer') Time Left: 
-      span(data-ng-show='gameCtrl.timer', em-countdown='gameCtrl.timer',
+      span(data-ng-show='gameCtrl.timer', em-countdown='gameCtrl.timer', em-countdown-end='gameCtrl.lose()',
         em-countdown-duration='sidebarCtrl.getDuration(gameCtrl.cards.length, gameCtrl.difficulty[gameCtrl.curDifficulty])')
     li
       span(data-ng-bind-template='Total Number of Cards: {{gameCtrl.numOfCards}}')

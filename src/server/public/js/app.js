@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  app = angular.module('concentration', ['ngAnimate', 'fx.animations', 'ui.bootstrap.modal']);
+  app = angular.module('concentration', ['ngAnimate', 'fx.animations', 'ui.bootstrap']);
 
   _.mixin({
     flip: function(f) {
@@ -61,6 +61,11 @@
 
   app.factory('IN', function() {
     return window.IN;
+  });
+
+  app.controller('GameModalCtrl', function($scope, $modalInstance, infoText) {
+    $scope.infoText = infoText;
+    $scope.close = $modalInstance.close.bind($modalInstance);
   });
 
   app.controller('CardsCtrl', function($scope, $timeout) {
@@ -138,6 +143,7 @@
   });
 
   app.controller('GameCtrl', function($scope, LoginService, CardService, $modal) {
+    var resetPairedViewModels;
     this.cardViewModels = [];
     this.cards = [];
     this.timer = false;
@@ -153,6 +159,23 @@
     this.matchedCards = [];
     this.showImg = false;
     this.imageFxCtr = 0;
+    resetPairedViewModels = function(pairedViewModels) {
+      var item, pair, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
+        pair = pairedViewModels[_i];
+        _results.push((function() {
+          var _j, _len1, _results1;
+          _results1 = [];
+          for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
+            item = pair[_j];
+            _results1.push(item.reset());
+          }
+          return _results1;
+        })());
+      }
+      return _results;
+    };
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
@@ -161,33 +184,53 @@
         });
       };
     })(this));
-    this.start = function(pairedViewModels, numOfCards) {
+    this.start = function(numOfCards) {
       var _ref;
       if (numOfCards == null) {
         numOfCards = 20;
       }
+      resetPairedViewModels(this.cardViewModels);
       this.timer = true;
       this.matchedCards.length = 0;
-      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(pairedViewModels, numOfCards))), _ref);
+      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(this.cardViewModels, numOfCards))), _ref);
     };
     this.stop = function() {
+      resetPairedViewModels(this.cardViewModels);
       this.timer = false;
-      return this.cards.length = 0;
+      this.cards.length = 0;
+      return this.cards;
     };
     this.generateCards = function(pairedViewModels, numOfCards) {
-      var item, pair, shuffledPairs, _i, _j, _len, _len1;
-      for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
-        pair = pairedViewModels[_i];
-        for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
-          item = pair[_j];
-          item.reset();
-        }
-      }
+      var shuffledPairs;
       shuffledPairs = CardService.shuffle(pairedViewModels);
       return CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2)));
     };
-    this.win = function() {};
-    this.lose = function() {};
+    this.win = function() {
+      var modal;
+      modal = $modal.open({
+        templateUrl: 'gameModal.html',
+        controller: 'GameModalCtrl',
+        resolve: {
+          infoText: function() {
+            return 'Congratulations! You get to see doge!';
+          }
+        }
+      });
+      return modal.result.then(this.stop.bind(this));
+    };
+    this.lose = function() {
+      var modal;
+      modal = $modal.open({
+        templateUrl: 'gameModal.html',
+        controller: 'GameModalCtrl',
+        resolve: {
+          infoText: function() {
+            return 'Aww too bad! You don\'t get to see the image yet :(.';
+          }
+        }
+      });
+      return modal.result.then(this.stop.bind(this));
+    };
     $scope.$on('fade-down enter', (function() {
       return this.showImg = true;
     }).bind(this));

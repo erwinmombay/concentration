@@ -3,6 +3,7 @@ extends layout
 block content
   #conc-app(data-ng-app='concentration', data-ng-controller='AppCtrl as appCtrl', data-ng-cloak)
     include ngTemplates/cards
+    include ngTemplates/gameModal
     .container-fluid(data-ng-if='appCtrl.isLoggedIn()',
       data-ng-controller='GameCtrl as gameCtrl')
       .row

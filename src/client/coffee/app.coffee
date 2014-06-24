@@ -1,4 +1,4 @@
-app = angular.module 'concentration', ['ngAnimate', 'fx.animations', 'ui.bootstrap.modal']
+app = angular.module 'concentration', ['ngAnimate', 'fx.animations', 'ui.bootstrap']
 
 # some additional simple functional helpers that arent in lodash
 _.mixin

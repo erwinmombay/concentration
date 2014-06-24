@@ -14,6 +14,10 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
   @showImg = false
   @imageFxCtr = 0
 
+  resetPairedViewModels = (pairedViewModels) ->
+    for pair in pairedViewModels
+      item.reset() for item in pair
+
   # NOTE: i would prefer to use `bind` than fat arrow (as to not create closures)
   # but this is just a quicker solution for now.
   # Also this call is redundant to the one AppCtrl but since our Models
@@ -23,25 +27,40 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     user.connections.find().then (connections) =>
       @cardViewModels[0..] = CardService.buildCardViewModels connections
 
-  # [(CardViewModel, CardViewModel)] -> Maybe Int -> [CardViewModel]
-  @start = (pairedViewModels, numOfCards = 20) ->
+  # Maybe Int -> [CardViewModel]
+  @start = (numOfCards = 20) ->
+    resetPairedViewModels @cardViewModels
     @timer = true
     @matchedCards.length = 0
-    @cards[0..] = @generateCards pairedViewModels, numOfCards
+    @cards[0..] = @generateCards @cardViewModels, numOfCards
 
+  # []
   @stop = ->
+    resetPairedViewModels @cardViewModels
     @timer = false
     @cards.length = 0
+    @cards
 
+  # [(CardViewModel, CardViewModel)] -> Int [CardViewModel]
   @generateCards = (pairedViewModels, numOfCards) ->
-    for pair in pairedViewModels
-      item.reset() for item in pair
     shuffledPairs = CardService.shuffle pairedViewModels
     CardService.shuffle _.flatten shuffledPairs[0...(numOfCards / 2)]
 
   @win = ->
+    modal = $modal.open
+      templateUrl: 'gameModal.html'
+      controller: 'GameModalCtrl'
+      resolve:
+        infoText: -> 'Congratulations! You get to see doge!'
+    modal.result.then @stop.bind @
 
   @lose = ->
+    modal = $modal.open
+      templateUrl: 'gameModal.html'
+      controller: 'GameModalCtrl'
+      resolve:
+        infoText: -> 'Aww too bad! You don\'t get to see the image yet :(.'
+    modal.result.then @stop.bind @
 
   $scope.$on 'fade-down enter', (->
     @showImg = true
