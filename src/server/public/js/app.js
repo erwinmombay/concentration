@@ -223,7 +223,8 @@
           }
         }
       });
-      return modal.result.then(this.stop.bind(this));
+      modal.result.then(this.stop.bind(this));
+      return modal;
     };
     this.win = function() {
       return this.createModal('Congratulations! You get to see doge!');

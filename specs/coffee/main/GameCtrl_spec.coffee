@@ -10,7 +10,9 @@ describe 'GameCtrl: ', ->
     $controller
     CardService
     Models
+    $templateCache
   ) ->
+    $templateCache.put 'gameModal.html', '<div></div>'
     scope = $rootScope.$new()
     raw = null
     IN.API.Connections().result (data) ->
@@ -19,8 +21,6 @@ describe 'GameCtrl: ', ->
     models = for data in raw
       new Models.LinkedInProfile data: data, __loaded: true
     pvm = CardService.buildCardViewModels models
-
-
     ctrl = $controller 'GameCtrl',
       $scope: scope
 
@@ -49,17 +49,58 @@ describe 'GameCtrl: ', ->
 
   describe 'starting a game', ->
 
-    beforeEach -> ctrl.start()
+    beforeEach ->
+      ctrl.cardViewModels = pvm
+      ctrl.start()
 
     it 'should set the timer to true', ->
+      ctrl.start()
       expect(ctrl.timer).toBe true
 
-    it 'should generated a shuffled set of cards', ->
+    it 'should have a set of cards', ->
+      expect(ctrl.cards.length).not.toBe 0
 
-  describe 'stopping a game', ->
+    describe 'generating cards', ->
 
-  describe 'resetting a game', ->
+      it 'tuple pairs should be flattened', ->
+        expect(ctrl.cardViewModels.length).toBe 2
+        expect(ctrl.cards.length).toBe 4
+
+    describe 'stopping a game', ->
+      beforeEach -> ctrl.stop()
+
+      it 'should set the timer to false', ->
+        expect(ctrl.timer).toBe false
+
+      it 'should empty out the cards', ->
+        expect(ctrl.cards.length).toBe 0
 
   describe 'winning a game', ->
 
-  describe ' losing a game', ->
+    it 'should pop up a modal', ->
+      spy = spyOn ctrl, 'createModal'
+      ctrl.win()
+      expect(spy).toHaveBeenCalled()
+
+    it 'should call stop', ->
+      spy = spyOn ctrl, 'stop'
+      modal = ctrl.win()
+      scope.$apply()
+      modal.close()
+      scope.$apply()
+      expect(spy).toHaveBeenCalled()
+
+  describe 'losing a game', ->
+
+    it 'should pop up a modal', ->
+      spy = spyOn ctrl, 'createModal'
+      ctrl.lose()
+      expect(spy).toHaveBeenCalled()
+
+    it 'should call stop', ->
+      spy = spyOn ctrl, 'stop'
+      modal = ctrl.lose()
+      scope.$apply()
+      modal.close()
+      scope.$apply()
+      expect(spy).toHaveBeenCalled()

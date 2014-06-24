@@ -76,9 +76,9 @@ module.exports = (grunt) ->
         dest: '<%= paths.server.js %>/pre-libs.js'
       postJs:
         src: [
+          '<%= paths.client.libs %>/ui-bootstrap-custom-tpls-0.10.0.min.js'
           '<%= paths.client.libs %>/angular-animate.min.js'
           '<%= paths.client.libs %>/ng-Fx.js'
-          '<%= paths.client.libs %>/ui-bootstrap-custom-tpls-0.10.0.min.js'
         ]
         dest: '<%= paths.server.js %>/post-libs.js'
       coffee:

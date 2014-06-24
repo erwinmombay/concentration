@@ -48,13 +48,15 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
 
 
   @createModal = (text) ->
-    modal = $modal.open
+    modal = $modal.open(
       templateUrl: 'gameModal.html'
       controller: 'GameModalCtrl'
       backdrop: 'static'
       resolve:
         infoText: -> text
+    )
     modal.result.then @stop.bind @
+    modal
 
   @win = -> @createModal 'Congratulations! You get to see doge!'
 

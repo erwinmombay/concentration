@@ -6,8 +6,9 @@
     moduleName = 'concentration';
     _ref = [], scope = _ref[0], ctrl = _ref[1], pvm = _ref[2];
     beforeEach(module(moduleName));
-    beforeEach(inject(function($rootScope, $controller, CardService, Models) {
+    beforeEach(inject(function($rootScope, $controller, CardService, Models, $templateCache) {
       var data, models, raw;
+      $templateCache.put('gameModal.html', '<div></div>');
       scope = $rootScope.$new();
       raw = null;
       IN.API.Connections().result(function(data) {
@@ -62,17 +63,68 @@
     });
     describe('starting a game', function() {
       beforeEach(function() {
+        ctrl.cardViewModels = pvm;
         return ctrl.start();
       });
       it('should set the timer to true', function() {
+        ctrl.start();
         return expect(ctrl.timer).toBe(true);
       });
-      return it('should generated a shuffled set of cards', function() {});
+      it('should have a set of cards', function() {
+        return expect(ctrl.cards.length).not.toBe(0);
+      });
+      describe('generating cards', function() {
+        return it('tuple pairs should be flattened', function() {
+          expect(ctrl.cardViewModels.length).toBe(2);
+          return expect(ctrl.cards.length).toBe(4);
+        });
+      });
+      return describe('stopping a game', function() {
+        beforeEach(function() {
+          return ctrl.stop();
+        });
+        it('should set the timer to false', function() {
+          return expect(ctrl.timer).toBe(false);
+        });
+        return it('should empty out the cards', function() {
+          return expect(ctrl.cards.length).toBe(0);
+        });
+      });
     });
-    describe('stopping a game', function() {});
-    describe('resetting a game', function() {});
-    describe('winning a game', function() {});
-    return describe(' losing a game', function() {});
+    describe('winning a game', function() {
+      it('should pop up a modal', function() {
+        var spy;
+        spy = spyOn(ctrl, 'createModal');
+        ctrl.win();
+        return expect(spy).toHaveBeenCalled();
+      });
+      return it('should call stop', function() {
+        var modal, spy;
+        spy = spyOn(ctrl, 'stop');
+        modal = ctrl.win();
+        scope.$apply();
+        modal.close();
+        scope.$apply();
+        return expect(spy).toHaveBeenCalled();
+      });
+    });
+    return describe('losing a game', function() {
+      it('should pop up a modal', function() {
+        var spy;
+        spy = spyOn(ctrl, 'createModal');
+        ctrl.lose();
+        return expect(spy).toHaveBeenCalled();
+      });
+      return it('should call stop', function() {
+        var modal, spy;
+        spy = spyOn(ctrl, 'stop');
+        modal = ctrl.lose();
+        scope.$apply();
+        modal.close();
+        scope.$apply();
+        return expect(spy).toHaveBeenCalled();
+      });
+    });
   });
 
 }).call(this);
