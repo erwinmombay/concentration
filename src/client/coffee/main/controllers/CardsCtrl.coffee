@@ -2,7 +2,6 @@ app.controller 'CardsCtrl', ($scope, $timeout) ->
   { gameCtrl } = $scope
 
   pair = []
-  matches = []
   cardTimers = []
 
   # CardViewModel -> CardViewModel -> Boolean
@@ -17,7 +16,7 @@ app.controller 'CardsCtrl', ($scope, $timeout) ->
   cleanUpCards = (gameTimer) ->
     for cardTimer in cardTimers
       $timeout.cancel cardTimer
-    cardTimers.length = pair.length = matches.length = 0
+    cardTimers.length = pair.length = gameCtrl.matchedCards.length = 0
 
   setUpCardTimer = (card) ->
     $timeout ->
@@ -28,7 +27,7 @@ app.controller 'CardsCtrl', ($scope, $timeout) ->
   # CardViewModel -> (CardViewModel, CardViewModel)
   @onCardClick = (card) ->
     return pair[..] unless gameCtrl.timer
-    return resetPair pair... if card in matches
+    return resetPair pair... if card in gameCtrl.matchedCards
     return resetPair pair... if card in pair and pair.length is 1
     if pair.length is 2
       return resetPair pair... if card in pair
@@ -41,9 +40,9 @@ app.controller 'CardsCtrl', ($scope, $timeout) ->
       if isMatch pair...
         [a, b] = pair
         a.matched = b.matched = true
-        matches.push pair...
-        if matches.length is $scope.gameCtrl.cards.length
-          $scope.gameCtrl.win()
+        gameCtrl.matchedCards.push pair...
+        if gameCtrl.matchedCards.length is gameCtrl.cards.length
+          gameCtrl.win()
         return resetPair()
     setUpCardTimer card if gameCtrl.curDifficulty is 'hard'
     pair[..]

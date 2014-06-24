@@ -64,10 +64,9 @@
   });
 
   app.controller('CardsCtrl', function($scope, $timeout) {
-    var cardTimers, cleanUpCards, gameCtrl, isMatch, matches, pair, resetPair, setUpCardTimer;
+    var cardTimers, cleanUpCards, gameCtrl, isMatch, pair, resetPair, setUpCardTimer;
     gameCtrl = $scope.gameCtrl;
     pair = [];
-    matches = [];
     cardTimers = [];
     isMatch = function(a, b) {
       return a.id === b.id && a.type !== b.type;
@@ -89,7 +88,7 @@
         cardTimer = cardTimers[_i];
         $timeout.cancel(cardTimer);
       }
-      return cardTimers.length = pair.length = matches.length = 0;
+      return cardTimers.length = pair.length = gameCtrl.matchedCards.length = 0;
     };
     setUpCardTimer = function(card) {
       return $timeout(function() {
@@ -99,11 +98,11 @@
       }, 1500);
     };
     this.onCardClick = function(card) {
-      var a, b;
+      var a, b, _ref;
       if (!gameCtrl.timer) {
         return pair.slice(0);
       }
-      if (__indexOf.call(matches, card) >= 0) {
+      if (__indexOf.call(gameCtrl.matchedCards, card) >= 0) {
         return resetPair.apply(null, pair);
       }
       if (__indexOf.call(pair, card) >= 0 && pair.length === 1) {
@@ -121,9 +120,9 @@
         if (isMatch.apply(null, pair)) {
           a = pair[0], b = pair[1];
           a.matched = b.matched = true;
-          matches.push.apply(matches, pair);
-          if (matches.length === $scope.gameCtrl.cards.length) {
-            $scope.gameCtrl.win();
+          (_ref = gameCtrl.matchedCards).push.apply(_ref, pair);
+          if (gameCtrl.matchedCards.length === gameCtrl.cards.length) {
+            gameCtrl.win();
           }
           return resetPair();
         }
@@ -151,6 +150,7 @@
     this.curDifficulty = 'easy';
     this.cardMultiplier = 10;
     this.difficulties = ['easy', 'medium', 'hard'];
+    this.matchedCards = [];
     LoginService.getUserAsync().then((function(_this) {
       return function(user) {
         return user.connections.find().then(function(connections) {
@@ -160,18 +160,20 @@
       };
     })(this));
     this.start = function(pairedViewModels, numOfCards) {
+      var _ref;
       if (numOfCards == null) {
         numOfCards = 20;
       }
       this.timer = true;
-      return this.generateCards(pairedViewModels, this.cards, numOfCards);
+      this.matchedCards.length = 0;
+      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(pairedViewModels, numOfCards))), _ref);
     };
     this.stop = function() {
       this.timer = false;
       return this.cards.length = 0;
     };
-    this.generateCards = function(pairedViewModels, cards, numOfCards) {
-      var item, pair, shuffledPairs, _i, _j, _len, _len1, _ref;
+    this.generateCards = function(pairedViewModels, numOfCards) {
+      var item, pair, shuffledPairs, _i, _j, _len, _len1;
       for (_i = 0, _len = pairedViewModels.length; _i < _len; _i++) {
         pair = pairedViewModels[_i];
         for (_j = 0, _len1 = pair.length; _j < _len1; _j++) {
@@ -180,7 +182,7 @@
         }
       }
       shuffledPairs = CardService.shuffle(pairedViewModels);
-      return ([].splice.apply(cards, [0, 9e9].concat(_ref = CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2))))), _ref);
+      return CardService.shuffle(_.flatten(shuffledPairs.slice(0, numOfCards / 2)));
     };
     this.win = function() {};
     this.lose = function() {};
@@ -236,6 +238,9 @@
           var duration;
           if (!!newVal) {
             duration = scope.emCountdownDuration();
+            if (duration <= 0) {
+              return;
+            }
             return clock = tickClock(now(), duration, duration);
           } else {
             return stopClock(clock);

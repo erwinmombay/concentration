@@ -1,10 +1,16 @@
 .col-md-2.sidebar(data-ng-controller='SidebarCtrl as sidebarCtrl')
   ul.nav.nav-sidebar
     li
-      .panel.panel-default
+      .panel.panel-default.text-center
         .panel-body(data-ng-bind='sidebarCtrl.instructions')
-  ul.nav.nav-sidebar(data-ng-show='appCtrl.appReady')
-    li
+  ul.nav.nav-sidebar.controls(data-ng-show='appCtrl.appReady')
+    li.text-center
+      .btn-group
+        .btn.btn-sm(data-ng-repeat='diff in gameCtrl.difficulties',
+          data-ng-click='sidebarCtrl.setDifficulty(diff)',
+          data-ng-class='sidebarCtrl.getDifficultyBtnState(diff)',
+          data-ng-bind='diff')
+    li.text-center
       button.btn.btn-success(type='button',
         data-ng-click='gameCtrl.start(gameCtrl.cardViewModels, gameCtrl.numOfCards)',
         data-ng-hide='gameCtrl.timer') Start Game
@@ -16,21 +22,15 @@
       span(data-ng-show='gameCtrl.timer') Time Left: 
       span(data-ng-show='gameCtrl.timer', em-countdown='gameCtrl.timer',
         em-countdown-duration='sidebarCtrl.getDuration(gameCtrl.cards.length, gameCtrl.difficulty[gameCtrl.curDifficulty])')
-
     li
-      span(data-ng-bind-template='Number of Cards: {{gameCtrl.numOfCards}}')
+      span(data-ng-bind-template='Total Number of Cards: {{gameCtrl.numOfCards}}')
       .btn-group.card-count(data-ng-hide='gameCtrl.timer')
-        .btn.btn-xs.btn-primary(href="#",
+        .btn.btn-xs.btn-default(href="#",
           data-ng-click='sidebarCtrl.decreaseCards(gameCtrl.cardMultiplier)') &laquo;
-        .btn.btn-xs.btn-primary(href="#",
+        .btn.btn-xs.btn-default(href="#",
           data-ng-click='sidebarCtrl.increaseCards(gameCtrl.cardMultiplier)') &raquo;
-
-    li
-      .btn-group
-        .btn.btn-sm(data-ng-repeat='diff in gameCtrl.difficulties',
-          data-ng-click='sidebarCtrl.setDifficulty(diff)',
-          data-ng-class='sidebarCtrl.getDifficultyBtnState(diff)',
-          data-ng-bind='diff')
+    li(data-ng-show='gameCtrl.timer')
+      span(data-ng-bind-template='Number of Cards Left: {{gameCtrl.numOfCards - gameCtrl.matchedCards.length}}')
 
   ul.nav.nav-sidebar.scores
     li Scores:

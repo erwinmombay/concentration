@@ -37,6 +37,7 @@ app.directive 'emCountdown', ($timeout) ->
     $scope.$watch 'emCountdown', (newVal, oldVal, scope) ->
       if !!newVal
         duration = scope.emCountdownDuration()
+        return if duration <= 0
         clock = tickClock now(), duration, duration
       else stopClock clock
 
