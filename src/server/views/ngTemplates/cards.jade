@@ -9,7 +9,12 @@ script(type='text/ng-template', id='cards.html')
           .card-img(data-ng-switch-when='img')
             img(data-ng-src='{{card.imgSrc}}')
           .card-info(data-ng-switch-default)
-            span(data-ng-bind='card.fullName')
+            .row.connection-name
+              .col-md-12
+                span(data-ng-bind-template='Name: {{card.fullName}}')
+            .row.connection-position
+              .col-md-12
+                span(data-ng-show='!!card.title' data-ng-bind-template='Position: {{card.title}}')
 
         .front
-          span click me
+            span click me

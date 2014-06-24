@@ -60,6 +60,8 @@ app.factory 'Models', (IN, $q) ->
     # Object
     value: -> @__cache
 
+    toJSON: -> _.clone @
+
 
   class LinkedInProfiles extends ApiModel
 

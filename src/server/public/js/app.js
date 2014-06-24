@@ -63,10 +63,12 @@
     return window.IN;
   });
 
-  app.controller('CardsCtrl', function($scope, LoginService) {
-    var isMatch, matches, pair, resetPair;
+  app.controller('CardsCtrl', function($scope, $timeout) {
+    var cardTimers, cleanUpCards, gameCtrl, isMatch, matches, pair, resetPair, setUpCardTimer;
+    gameCtrl = $scope.gameCtrl;
     pair = [];
     matches = [];
+    cardTimers = [];
     isMatch = function(a, b) {
       return a.id === b.id && a.type !== b.type;
     };
@@ -81,9 +83,24 @@
       pair.length = 0;
       return pair.slice(0);
     };
+    cleanUpCards = function(gameTimer) {
+      var cardTimer, _i, _len;
+      for (_i = 0, _len = cardTimers.length; _i < _len; _i++) {
+        cardTimer = cardTimers[_i];
+        $timeout.cancel(cardTimer);
+      }
+      return cardTimers.length = pair.length = matches.length = 0;
+    };
+    setUpCardTimer = function(card) {
+      return $timeout(function() {
+        if (__indexOf.call(pair, card) >= 0) {
+          return resetPair.apply(null, pair);
+        }
+      }, 1500);
+    };
     this.onCardClick = function(card) {
       var a, b;
-      if (!$scope.gameCtrl.timer) {
+      if (!gameCtrl.timer) {
         return pair.slice(0);
       }
       if (__indexOf.call(matches, card) >= 0) {
@@ -111,11 +128,13 @@
           return resetPair();
         }
       }
+      if (gameCtrl.curDifficulty === 'hard') {
+        setUpCardTimer(card);
+      }
       return pair.slice(0);
     };
-    $scope.$watch('gameCtrl.timer', function(timer) {
-      return pair.length = matches.length = 0;
-    });
+    $scope.$watch('gameCtrl.timer', cleanUpCards);
+    $scope.$on('$destroy', cleanUpCards);
     return this;
   });
 
@@ -228,14 +247,19 @@
   app.factory('CardService', function() {
     var CardViewModel, buildCardViewModel, fisherYates;
     CardViewModel = (function() {
-      function CardViewModel(id, type, fullName, title, imgSrc, flipped) {
-        this.id = id;
+      function CardViewModel(type, data) {
         this.type = type != null ? type : 'info';
-        this.fullName = fullName != null ? fullName : '';
-        this.title = title != null ? title : '';
-        this.imgSrc = imgSrc != null ? imgSrc : '';
-        this.flipped = flipped != null ? flipped : false;
+        if (data == null) {
+          data = {};
+        }
+        _.extend(this, data);
         this.cid = "" + this.type + this.id;
+        this.title = this.headline;
+        this.imgSrc = this.pictureUrl;
+        delete this.headline;
+        delete this.pictureUrl;
+        this.fullName = "" + this.firstName + " " + this.lastName;
+        this.flipped = false;
         this.matched = false;
       }
 
@@ -261,7 +285,7 @@
       if (type == null) {
         type = 'info';
       }
-      return new CardViewModel(profile.id, type, "" + profile.firstName + " " + profile.lastName, profile.headline, profile.pictureUrl);
+      return new CardViewModel(type, profile.toJSON());
     };
     return {
       shuffle: function(cards) {
@@ -357,6 +381,10 @@
         return this.__cache;
       };
 
+      ApiModel.prototype.toJSON = function() {
+        return _.clone(this);
+      };
+
       return ApiModel;
 
     })();
@@ -420,7 +448,7 @@
   app.controller('SidebarCtrl', function($scope) {
     var gameCtrl;
     gameCtrl = $scope.gameCtrl;
-    this.instructions = "Difficulty settings control a certain multipler using the number of cards which\nends up as the duration of the game.\nThe \"hard\" difficulty also closes the flipped over card after a couple of seconds.";
+    this.instructions = "Instructions: Difficulty settings control a certain multipler\nusing the number of cards which ends up as the duration of the game.\nThe \"hard\" difficulty also closes the flipped over card (or the pair)\nafter a couple of seconds.";
     this.getDuration = function(numOfCards, difficulty) {
       if (numOfCards == null) {
         numOfCards = 0;
@@ -450,6 +478,14 @@
         return;
       }
       return gameCtrl.curDifficulty = difficulty;
+    };
+    this.getDifficultyBtnState = function(diff) {
+      return {
+        active: this.isDifficultyBtnActive(diff),
+        "btn-default": !this.isDifficultyBtnActive(diff),
+        "btn-primary": this.isDifficultyBtnActive(diff),
+        disabled: gameCtrl.timer
+      };
     };
     return this;
   });

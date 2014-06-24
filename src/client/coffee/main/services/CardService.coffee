@@ -1,14 +1,14 @@
 app.factory 'CardService', ->
   class CardViewModel
-    constructor: (
-      @id
-      @type = 'info'
-      @fullName = ''
-      @title = ''
-      @imgSrc = ''
-      @flipped = false
-    ) ->
+    constructor: (@type = 'info', data = {}) ->
+      _.extend @, data
       @cid = "#{@type}#{@id}"
+      @title = @headline
+      @imgSrc = @pictureUrl
+      delete @headline
+      delete @pictureUrl
+      @fullName = "#{@firstName} #{@lastName}"
+      @flipped = false
       @matched = false
 
     reset: ->
@@ -27,13 +27,7 @@ app.factory 'CardService', ->
 
   # LinkedInProfile -> Maybe String -> CardViewModel
   buildCardViewModel = (profile, type = 'info') ->
-    new CardViewModel(
-        profile.id
-        type
-        "#{profile.firstName} #{profile.lastName}"
-        profile.headline
-        profile.pictureUrl
-    )
+    new CardViewModel type, profile.toJSON()
 
   # [CardViewModel] -> [CardViewModel]
   shuffle: (cards) -> fisherYates cards[..]

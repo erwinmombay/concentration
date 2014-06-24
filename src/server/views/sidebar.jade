@@ -27,9 +27,9 @@
 
     li
       .btn-group
-        .btn.btn-sm.btn-default(data-ng-repeat='diff in gameCtrl.difficulties',
+        .btn.btn-sm(data-ng-repeat='diff in gameCtrl.difficulties',
           data-ng-click='sidebarCtrl.setDifficulty(diff)',
-          data-ng-class='{active: sidebarCtrl.isDifficultyBtnActive(diff), disabled: gameCtrl.timer}',
+          data-ng-class='sidebarCtrl.getDifficultyBtnState(diff)',
           data-ng-bind='diff')
 
   ul.nav.nav-sidebar.scores
