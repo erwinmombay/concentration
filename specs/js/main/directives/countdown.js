@@ -31,7 +31,7 @@
       });
       it('should append the number of seconds left', function() {
         scope.$apply();
-        return expect(view.text()).toBe('2s');
+        return expect(view.text()).toBe('3s');
       });
       return describe('counting down', function() {
         var tick;

@@ -32,7 +32,7 @@ describe 'emCountdown: ', ->
 
     it 'should append the number of seconds left', ->
       scope.$apply()
-      expect(view.text()).toBe '2s'
+      expect(view.text()).toBe '3s'
 
     describe 'counting down', ->
       tick = ->
