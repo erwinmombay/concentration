@@ -17,5 +17,5 @@ script(type='text/ng-template', id='cards.html')
               .col-md-12
                 span(data-ng-show='!!card.title' data-ng-bind-template='Position: {{card.title}}')
 
-        .front
+        .front(ng-hide='card.flipped')
           .question-mark ?

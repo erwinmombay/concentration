@@ -5565,6 +5565,8 @@ button.close {
   transform: rotateY(180deg);
 }
 .flipper {
+  height: 100%;
+  width: 100%;
   -webkit-transition: 0.2s;
   -o-transition: 0.2s;
   transition: 0.2s;
@@ -5589,6 +5591,7 @@ button.close {
 }
 /* back, initially hidden pane */
 .back {
+  height: 100%;
   width: 100%;
   -webkit-transform: rotateY(180deg);
   -ms-transform: rotateY(180deg);
