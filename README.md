@@ -1,4 +1,4 @@
-demo can be found in: [conc.herokuapp.com](conc.herokuapp.com)
+demo can be found in: [conc.herokuapp.com](http://conc.herokuapp.com)
 
 path to client side code in coffeescript: [front-end](https://github.com/erwinmombay/concentration/tree/master/src/client/coffee)
 
