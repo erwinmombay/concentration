@@ -13,6 +13,6 @@ defaults =
   ],
   autoWatch: true,
   browsers: ['Chrome']
-  reporters: ['progress']
+  reporters: ['progress', 'coverage']
 
 module.exports = (config) -> config.set defaults

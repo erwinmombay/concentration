@@ -53,6 +53,7 @@ module.exports = (grunt) ->
           'src/server/public/styles/app.css': ['<%= paths.client.styles %>/app.less']
 
     clean:
+      test: 'specs/js'
       public: 'src/server/public'
       coffee: 'src/client/build'
 
@@ -130,7 +131,7 @@ module.exports = (grunt) ->
     'copy:img'
     'copy:fonts'
   ]
-  grunt.registerTask 'test', ['default', 'coffee:clientSpecs']
+  grunt.registerTask 'test', ['clean:test', 'default', 'coffee:clientSpecs']
   grunt.registerTask 'default', ['cs']
   grunt.registerTask 'production', ['default']
   grunt.registerTask 'heroku', ['default']

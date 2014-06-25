@@ -2,12 +2,13 @@
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   describe('GameCtrl: ', function() {
-    var ctrl, moduleName, pvm, scope, _ref;
+    var $timeout, ctrl, moduleName, pvm, scope, _ref;
     moduleName = 'concentration';
-    _ref = [], scope = _ref[0], ctrl = _ref[1], pvm = _ref[2];
+    _ref = [], $timeout = _ref[0], scope = _ref[1], ctrl = _ref[2], pvm = _ref[3];
     beforeEach(module(moduleName));
-    beforeEach(inject(function($rootScope, $controller, CardService, Models, $templateCache) {
+    beforeEach(inject(function($rootScope, $controller, CardService, Models, $templateCache, _$timeout_) {
       var data, models, raw;
+      $timeout = _$timeout_;
       $templateCache.put('gameModal.html', '<div></div>');
       scope = $rootScope.$new();
       raw = null;
@@ -28,9 +29,10 @@
         return _results;
       })();
       pvm = CardService.buildCardViewModels(models);
-      return ctrl = $controller('GameCtrl', {
+      ctrl = $controller('GameCtrl', {
         $scope: scope
       });
+      return ctrl.cardViewModels = pvm;
     }));
     describe('initial state of game controller', function() {
       it('should have the timer set to false', function() {
@@ -63,11 +65,10 @@
     });
     describe('starting a game', function() {
       beforeEach(function() {
-        ctrl.cardViewModels = pvm;
-        return ctrl.start();
+        ctrl.start();
+        return $timeout.flush();
       });
       it('should set the timer to true', function() {
-        ctrl.start();
         return expect(ctrl.timer).toBe(true);
       });
       it('should have a set of cards', function() {
@@ -86,8 +87,8 @@
         it('should set the timer to false', function() {
           return expect(ctrl.timer).toBe(false);
         });
-        return it('should empty out the cards', function() {
-          return expect(ctrl.cards.length).toBe(0);
+        return it('should not empty out the cards', function() {
+          return expect(ctrl.cards.length).toBe(4);
         });
       });
     });

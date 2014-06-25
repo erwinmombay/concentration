@@ -1,4 +1,4 @@
-app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
+app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal, $timeout) ->
   @cardViewModels = []
   @cards = []
   @timer = false
@@ -28,22 +28,23 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     user.connections.find().then (connections) =>
       @cardViewModels[0..] = CardService.buildCardViewModels connections
 
-  # Maybe Int -> [CardViewModel]
+  # Maybe Int -> Maybe [CardViewModel] -> ()
   @start = (numOfCards = 20, cardViewModels = @cardViewModels) ->
     @matchedCards.length = @matchAttempts = @cards.length = 0
     resetPairedViewModels cardViewModels
     @showImg = false
-    $scope.$evalAsync (->
+    $timeout (->
       @timer = true
       @cards[0..] = @generateCards cardViewModels, numOfCards
     ).bind @
-    @cards[..]
+    return
 
-  # []
+  # Maybe [CardViewModel] -> ()
   @stop = (cardViewModels = @cardViewModels) ->
     @showImg = false if @matchedCards.length isnt @cards.length
     @timer = false
     @cards
+    return
 
   # [(CardViewModel, CardViewModel)] -> Int [CardViewModel]
   @generateCards = (pairedViewModels, numOfCards) ->

@@ -1,5 +1,5 @@
 (function() {
-  describe('CardsCtrl:', function() {
+  describe('CardsCtrl: ', function() {
     var card1, card1a, card2, card3, ctrl, moduleName, pair, scope, _ref;
     moduleName = 'concentration';
     _ref = [], ctrl = _ref[0], pair = _ref[1], scope = _ref[2], card1 = _ref[3], card2 = _ref[4], card3 = _ref[5], card1a = _ref[6];

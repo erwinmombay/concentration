@@ -1,4 +1,4 @@
-describe 'CardsCtrl:', ->
+describe 'CardsCtrl: ', ->
   moduleName = 'concentration'
   [ctrl, pair, scope, card1, card2, card3, card1a] = []
   card1 = null

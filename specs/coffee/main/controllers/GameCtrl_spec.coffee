@@ -1,6 +1,6 @@
 describe 'GameCtrl: ', ->
   moduleName = 'concentration'
-  [scope, ctrl, pvm] = []
+  [$timeout, scope, ctrl, pvm] = []
 
   beforeEach module moduleName
 
@@ -11,7 +11,9 @@ describe 'GameCtrl: ', ->
     CardService
     Models
     $templateCache
+    _$timeout_
   ) ->
+    $timeout = _$timeout_
     $templateCache.put 'gameModal.html', '<div></div>'
     scope = $rootScope.$new()
     raw = null
@@ -23,6 +25,7 @@ describe 'GameCtrl: ', ->
     pvm = CardService.buildCardViewModels models
     ctrl = $controller 'GameCtrl',
       $scope: scope
+    ctrl.cardViewModels = pvm
 
   describe 'initial state of game controller', ->
 
@@ -50,11 +53,10 @@ describe 'GameCtrl: ', ->
   describe 'starting a game', ->
 
     beforeEach ->
-      ctrl.cardViewModels = pvm
       ctrl.start()
+      $timeout.flush()
 
     it 'should set the timer to true', ->
-      ctrl.start()
       expect(ctrl.timer).toBe true
 
     it 'should have a set of cards', ->
@@ -72,8 +74,8 @@ describe 'GameCtrl: ', ->
       it 'should set the timer to false', ->
         expect(ctrl.timer).toBe false
 
-      it 'should empty out the cards', ->
-        expect(ctrl.cards.length).toBe 0
+      it 'should not empty out the cards', ->
+        expect(ctrl.cards.length).toBe 4
 
   describe 'winning a game', ->
 

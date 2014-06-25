@@ -143,7 +143,7 @@
     return this;
   });
 
-  app.controller('GameCtrl', function($scope, LoginService, CardService, $modal) {
+  app.controller('GameCtrl', function($scope, LoginService, CardService, $modal, $timeout) {
     var resetPairedViewModels;
     this.cardViewModels = [];
     this.cards = [];
@@ -196,12 +196,11 @@
       this.matchedCards.length = this.matchAttempts = this.cards.length = 0;
       resetPairedViewModels(cardViewModels);
       this.showImg = false;
-      $scope.$evalAsync((function() {
+      $timeout((function() {
         var _ref;
         this.timer = true;
         return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(cardViewModels, numOfCards))), _ref);
       }).bind(this));
-      return this.cards.slice(0);
     };
     this.stop = function(cardViewModels) {
       if (cardViewModels == null) {
@@ -211,7 +210,7 @@
         this.showImg = false;
       }
       this.timer = false;
-      return this.cards;
+      this.cards;
     };
     this.generateCards = function(pairedViewModels, numOfCards) {
       var shuffledPairs;
