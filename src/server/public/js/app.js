@@ -187,26 +187,30 @@
       };
     })(this));
     this.start = function(numOfCards, cardViewModels) {
-      var _ref;
       if (numOfCards == null) {
         numOfCards = 20;
       }
       if (cardViewModels == null) {
         cardViewModels = this.cardViewModels;
       }
+      this.matchedCards.length = this.matchAttempts = this.cards.length = 0;
       resetPairedViewModels(cardViewModels);
-      this.timer = true;
-      this.matchedCards.length = 0;
-      this.matchAttempts = 0;
-      return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(cardViewModels, numOfCards))), _ref);
+      this.showImg = false;
+      $scope.$evalAsync((function() {
+        var _ref;
+        this.timer = true;
+        return ([].splice.apply(this.cards, [0, 9e9].concat(_ref = this.generateCards(cardViewModels, numOfCards))), _ref);
+      }).bind(this));
+      return this.cards.slice(0);
     };
     this.stop = function(cardViewModels) {
       if (cardViewModels == null) {
         cardViewModels = this.cardViewModels;
       }
-      resetPairedViewModels(cardViewModels);
+      if (this.matchedCards.length !== this.cards.length) {
+        this.showImg = false;
+      }
       this.timer = false;
-      this.matchAttempts = this.cards.length = 0;
       return this.cards;
     };
     this.generateCards = function(pairedViewModels, numOfCards) {
@@ -237,9 +241,6 @@
     };
     $scope.$on('fade-down enter', (function() {
       return this.showImg = true;
-    }).bind(this));
-    $scope.$watch('gameCtrl.timer', (function(gameTimer) {
-      return this.showImg = false;
     }).bind(this));
     return this;
   });

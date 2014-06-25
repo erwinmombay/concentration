@@ -29,18 +29,20 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
       @cardViewModels[0..] = CardService.buildCardViewModels connections
 
   # Maybe Int -> [CardViewModel]
-  @start = (numOfCards = 20 , cardViewModels = @cardViewModels) ->
+  @start = (numOfCards = 20, cardViewModels = @cardViewModels) ->
+    @matchedCards.length = @matchAttempts = @cards.length = 0
     resetPairedViewModels cardViewModels
-    @timer = true
-    @matchedCards.length = 0
-    @matchAttempts = 0
-    @cards[0..] = @generateCards cardViewModels, numOfCards
+    @showImg = false
+    $scope.$evalAsync (->
+      @timer = true
+      @cards[0..] = @generateCards cardViewModels, numOfCards
+    ).bind @
+    @cards[..]
 
   # []
   @stop = (cardViewModels = @cardViewModels) ->
-    resetPairedViewModels cardViewModels
+    @showImg = false if @matchedCards.length isnt @cards.length
     @timer = false
-    @matchAttempts = @cards.length = 0
     @cards
 
   # [(CardViewModel, CardViewModel)] -> Int [CardViewModel]
@@ -60,11 +62,12 @@ app.controller 'GameCtrl', ($scope, LoginService, CardService, $modal) ->
     modal.result.then @stop.bind @
     modal
 
-  @win = -> @createModal """Congratulations! You get to see doge!"""
+  @win = ->
+    @createModal """Congratulations! You get to see doge!"""
 
-  @lose = -> @createModal """Aww too bad, times up! You don\'t get to see the image yet :(."""
+  @lose = ->
+    @createModal """Aww too bad, times up! You don\'t get to see the image yet :(."""
 
   $scope.$on 'fade-down enter', (-> @showImg = true).bind @
-  $scope.$watch 'gameCtrl.timer', ((gameTimer) -> @showImg = false).bind @
 
   return this

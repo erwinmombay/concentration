@@ -1,6 +1,7 @@
 .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
   .cards.row
-    .col-md-12(data-ng-controller='CardsCtrl as cardsCtrl' data-ng-if='appCtrl.appReady')
-      .panel.panel-default(data-ng-class='{doge: gameCtrl.showImg}' ng-show='gameCtrl.timer')
+    .col-md-12(data-ng-controller='CardsCtrl as cardsCtrl', data-ng-if='appCtrl.appReady')
+      .panel.panel-default(data-ng-class='{doge: gameCtrl.showImg}',
+        ng-show='gameCtrl.timer || gameCtrl.showImg')
         .panel-body
           .row(data-ng-include='"cards.html"')
